@@ -2,7 +2,15 @@ const Discord = require('discord.io');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const thanksMessages = [
+class ExtArray extends Array {
+	random () {
+		// Use `Object.keys()` to work w/ sparse arrays
+		const keys = Object.keys(this);
+		return this[keys[Math.floor(Math.random()*keys.length)]];
+	}
+}
+
+const thanksMessages = new ExtArray(
 	(name) => `Thanks for doing your turn, ${name}!`,
 	(name) => `Thanks, ${name},  for doing your turn!`,
 	(name) => `Good job, ${name}!`,
@@ -13,9 +21,9 @@ const thanksMessages = [
 	(name) => `${name}, I did *not* see that coming!`,
 	(name) => `*Smashing* maneuver by ${name}!`,
 	(name) => `Interesting move, ${name}.`
-];
+);
 
-const promptMessages = [
+const promptMessages = new ExtArray(
 	(name) => `Let's see how ${name} responds.`,
 	(name) => `${name} is up now - let's see what happens.`,
 	(name) => `How will you respond, ${name}?`,
@@ -25,7 +33,7 @@ const promptMessages = [
 	(name) => `Time for ${name} to go!`,
 	(name) => `Don't be slow, ${name}!`,
 	(name) => `${name} is up!`,
-];
+);
 
 const people = [
 	{
@@ -76,11 +84,8 @@ app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
 	const nextPlayer = people.find(p => p.pydtName === req.body.userName);
 	const prevPlayer = nextPlayer.prevPlayer();
 
-	const thanksTemplate = thanksMessages[Math.floor(Math.random()*thanksMessages.length)];
-	const thanksMessage = thanksTemplate(prevPlayer.friendlyName);
-
-	const promptTemplate = promptMessages[Math.floor(Math.random()*promptMessages.length)];
-	const promptMessage = promptTemplate(`<@${nextPlayer.discordId}>`);
+	const thanksMessage = thanksMessages.random()(prevPlayer.friendlyName);
+	const promptMessage = promptMessages.random()(`<@${nextPlayer.discordId}>`);
 
 	const message = `${thanksMessage} ${promptMessage}`;
 
