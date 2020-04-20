@@ -1,14 +1,22 @@
 {
   "name": "klodnicki-pydt-notifier",
   "version": "0.1.0",
-  "description": "",
+  "description": "Hook \"Play Your Damn Turn\" turn notifications to Discord",
   "main": "index.js",
+  "author": {
+    "name": "Zack Klodnicki",
+    "email": "klod.zack@gmail.com"
+  },
+  "license": "ISC",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "PYDT",
+    "Discord",
+    "turn",
+    "notifications"
+  ],
   "dependencies": {
     "body-parser": "^1.19.0",
     "discord.io": "github:woor/discord.io#gateway_v6",
