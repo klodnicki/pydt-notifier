@@ -12,7 +12,7 @@ class ExtArray extends Array {
 
 const thanksMessages = new ExtArray(
 	(name) => `Thanks for doing your turn, ${name}!`,
-	(name) => `Thanks, ${name},  for doing your turn!`,
+	(name) => `Thanks, ${name}, for doing your turn!`,
 	(name) => `Good job, ${name}!`,
 	(name) => `Done and done by ${name}.`,
 	(name) => `An excellent turn completion by ${name}.`,
