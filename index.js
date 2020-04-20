@@ -3,28 +3,28 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const thanksMessages = [
-	  ['Thanks for doing your turn, ', '!'],
-	  ['Thanks, ', ',  for doing your turn!'],
-	  ['Good job, ', '!'],
-	  ['Done and done by ', '.'],
-	  ['An excellent turn completion by ', '.'],
-	  ['WHAT A MOVE! ', ' is really shaking up the world.'],
-	  ['Power play by ', '!'],
-	  ['', ', I did *not* see that coming!'],
-	  ['*Smashing* maneuver by ', '!'],
-	  ['Interesting move, ', '.']
+	(name) => `Thanks for doing your turn, ${name}!`,
+	(name) => `Thanks, ${name},  for doing your turn!`,
+	(name) => `Good job, ${name}!`,
+	(name) => `Done and done by ${name}.`,
+	(name) => `An excellent turn completion by ${name}.`,
+	(name) => `WHAT A MOVE! ${name} is really shaking up the world.`,
+	(name) => `Power play by ${name}!`,
+	(name) => `${name}, I did *not* see that coming!`,
+	(name) => `*Smashing* maneuver by ${name}!`,
+	(name) => `Interesting move, ${name}.`
 ];
 
 const promptMessages = [
-	  ['Let\'s see how ', ' responds.'],
-	  ['', ' is up now - let\'s see what happens.'],
-	  ['How will you respond, ', '?'],
-	  ['How will ', ' respond?'],
-	  ['You\'re up, ', '!'],
-	  ['', ' is up next!'],
-	  ['Time for ', ' to go!'],
-	  ['Don\'t be slow, ', '!'],
-	  ['', ' is up!'],
+	(name) => `Let's see how ${name} responds.`,
+	(name) => `${name} is up now - let's see what happens.`,
+	(name) => `How will you respond, ${name}?`,
+	(name) => `How will ${name} respond?`,
+	(name) => `You're up, ${name}!`,
+	(name) => `${name} is up next!`,
+	(name) => `Time for ${name} to go!`,
+	(name) => `Don't be slow, ${name}!`,
+	(name) => `${name} is up!`,
 ];
 
 const people = [
@@ -76,11 +76,11 @@ app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
 	const nextPlayer = people.find(p => p.pydtName === req.body.userName);
 	const prevPlayer = nextPlayer.prevPlayer();
 
-	const thanksMessageArr = thanksMessages[Math.floor(Math.random()*thanksMessages.length)];
-	const thanksMessage = `${thanksMessageArr[0]}${prevPlayer.friendlyName}${thanksMessageArr[1]}`;
+	const thanksTemplate = thanksMessages[Math.floor(Math.random()*thanksMessages.length)];
+	const thanksMessage = thanksTemplate(prevPlayer.friendlyName);
 
-	const promptMessageArr = promptMessages[Math.floor(Math.random()*promptMessages.length)];
-	const promptMessage = `${promptMessageArr[0]}<@${nextPlayer.discordId}>${promptMessageArr[1]}`;
+	const promptTemplate = promptMessages[Math.floor(Math.random()*promptMessages.length)];
+	const promptMessage = promptTemplate(`<@${nextPlayer.discordId}>`);
 
 	const message = `${thanksMessage} ${promptMessage}`;
 
