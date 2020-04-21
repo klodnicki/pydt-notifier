@@ -1,2 +1,3 @@
 # PYDT Notifier
-Hook "Play Your Damn Turn" turn notifications to Discord
+Hook ["Play Your Damn Turn"](https://www.playyourdamnturn.com/) turn
+notifications to [Discord](https://discordapp.com/)
