@@ -17,6 +17,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshklod/pydt-notifier.git"
+  },
+  "homepage": "https://github.com/joshklod/pydt-notifier#readme",
+  "bugs": {
+    "url": "https://github.com/joshklod/pydt-notifier/issues"
+  },
   "keywords": [
     "PYDT",
     "Discord",
