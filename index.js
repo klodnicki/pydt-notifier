@@ -60,7 +60,7 @@ const pydtChannel = '698727225171902464';
 // Setup Discord
 
 const bot = new Discord.Client({
-	token: '[REDACTED]',
+	token: require('./bot.json').token,
 	autorun: true
 });
 
