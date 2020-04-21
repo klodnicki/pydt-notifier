@@ -93,7 +93,10 @@ app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
 	bot.sendMessage({
 		to: pydtChannel,
 		message: message
-	}, (err, response) => console.dir({err, response}));
+	}, (err, response) => {
+		if (err) console.error(err);
+		else     console.dir(response);
+	});
 });
 
 app.listen(7532, (err) => {
