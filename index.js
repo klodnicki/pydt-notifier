@@ -57,6 +57,11 @@ const people = [
 const zack = people.find(p => p.friendlyName === 'Zack').discordId;
 const pydtChannel = '698727225171902464';
 
+function exitError (err) {
+	console.error(err);
+	process.exit(1);
+}
+
 // Setup Discord
 
 const bot = new Discord.Client({ token: require('./bot.json').token });
@@ -67,7 +72,7 @@ const botReady = new Promise((resolve, reject) => {
 	bot.connect();
 }).catch((err) => {
 	console.error('Failed to connect bot to Discord');
-	console.error(err);
+	exitError(err);
 });
 
 botReady.then((event) => {
@@ -77,8 +82,9 @@ botReady.then((event) => {
 		console.log('Discord error:');
 		console.error(e);
 		console.error(code);
+		process.exit(1);
 	});
-}).catch(console.error);
+}).catch(exitError);
 
 // Setup Express
 
@@ -108,7 +114,7 @@ app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
 });
 
 app.listen(7532, (err) => {
-	if(err) console.error(err);
+	if (err) exitError(err);
 	else console.log('Listening on 7532');
 });
 
