@@ -59,20 +59,26 @@ const pydtChannel = '698727225171902464';
 
 // Setup Discord
 
-const bot = new Discord.Client({
-	token: require('./bot.json').token,
-	autorun: true
+const bot = new Discord.Client({ token: require('./bot.json').token });
+
+const botReady = new Promise((resolve, reject) => {
+	bot.on('ready',      resolve);
+	bot.on('disconnect', (errMsg, code) => reject({errMsg, code}));
+	bot.connect();
+}).catch((err) => {
+	console.error('Failed to connect bot to Discord');
+	console.error(err);
 });
 
-bot.on('ready', function() {
+botReady.then((event) => {
 	console.log(`Logged in as ${bot.username} - ${bot.id}`);
-});
 
-bot.on('disconnect', function(e, code) {
-	console.log('Discord error:');
-	console.error(e);
-	console.error(code);
-});
+	bot.on('disconnect', function(e, code) {
+		console.log('Discord error:');
+		console.error(e);
+		console.error(code);
+	});
+}).catch(console.error);
 
 // Setup Express
 
@@ -81,22 +87,24 @@ const app = express();
 app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
 	res.send();
 
-	const nextPlayer = people.find(p => p.pydtName === req.body.userName);
-	const prevPlayer = nextPlayer.prevPlayer();
+	botReady.then((event) => {
+		const nextPlayer = people.find(p => p.pydtName === req.body.userName);
+		const prevPlayer = nextPlayer.prevPlayer();
 
-	const thanksMessage = thanksMessages.random()(prevPlayer.friendlyName);
-	const promptMessage = promptMessages.random()(`<@${nextPlayer.discordId}>`);
+		const thanksMessage = thanksMessages.random()(prevPlayer.friendlyName);
+		const promptMessage = promptMessages.random()(`<@${nextPlayer.discordId}>`);
 
-	const message = `${thanksMessage} ${promptMessage}`;
+		const message = `${thanksMessage} ${promptMessage}`;
 
 
-	bot.sendMessage({
-		to: pydtChannel,
-		message: message
-	}, (err, response) => {
-		if (err) console.error(err);
-		else     console.dir(response);
-	});
+		bot.sendMessage({
+			to: pydtChannel,
+			message: message
+		}, (err, response) => {
+			if (err) console.error(err);
+			else     console.dir(response);
+		});
+	}).catch(console.error);
 });
 
 app.listen(7532, (err) => {
