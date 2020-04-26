@@ -1,0 +1,9 @@
+[Unit]
+Description=com-klodnicki-pydt-notifier
+
+[Service]
+ExecStart=/var/www/com/klodnicki/pydt-notifier/api/node_modules/.bin/com-klodnicki-pydt-notifier /var/www/com/klodnicki/pydt-notifier/.config/com-klodnicki-pydt-notifier/config.json
+
+[Install]
+WantedBy=multi-user.target
+Alias=com-klodnicki-photos-api.service

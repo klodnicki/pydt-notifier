@@ -1,5 +1,5 @@
 {
-  "name": "klodnicki-pydt-notifier",
+  "name": "com-klodnicki-pydt-notifier",
   "version": "0.1.1",
   "description": "Hook \"Play Your Damn Turn\" turn notifications to Discord",
   "main": "index.js",
@@ -15,7 +15,8 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "rm -f com-klodnicki-pydt-notifier*.tgz && npm pack && mv com-klodnicki-pydt-notifier*.tgz com-klodnicki-pydt-notifier.tgz"
   },
   "repository": {
     "type": "git",
