@@ -33,8 +33,8 @@ pipeline {
             steps { script {
                 sshCommand remote: remote, command: 'rm -rf api.new api.old'
                 sshCommand remote: remote, command: 'mkdir api.new'
-                sshPut remote: remote, from: 'api/com-klodnicki-pydt-notifier.tgz', into: 'api.new'
-                sshPut remote: remote, from: 'api/com-klodnicki-pydt-notifier.service', into: 'api.new'
+                sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.tgz', into: 'api.new'
+                sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.service', into: 'api.new'
                 sshCommand remote: remote, command: '''
                     cd api.new
                     npm i com-klodnicki-pydt-notifier.tgz
