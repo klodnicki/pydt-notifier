@@ -42,6 +42,7 @@ pipeline {
                     mkdir -p ~/.config/systemd/user/
                     mv com-klodnicki-pydt-notifier.service ~/.config/systemd/user/com-klodnicki-pydt-notifier.service
                 '''
+            } }
         }
 
         stage('Deploy') {
