@@ -3,8 +3,8 @@
 		"port": 7531
 	},
 	"discord": {
-		"clientToken": "Njk4NzE5NjQxMzEyMjk3MDcw.XpJ8Tw.dS_Nn00aaRwTOG68UwdF-ADWfPY",
-		"targetChannel": "303699009401389057"
+		"clientToken": "",
+		"targetChannel": ""
 	},
 	"testNotification": {
 		"gameName": "Klodnicki CIV6 - 1",
