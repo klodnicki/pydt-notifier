@@ -2,6 +2,8 @@ const Discord = require('discord.io');
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const config = require('./config');
+
 class ExtArray extends Array {
 	random () {
 		// Use `Object.keys()` to work w/ sparse arrays
@@ -55,7 +57,6 @@ const people = [
 ];
 
 const zack = people.find(p => p.friendlyName === 'Zack').discordId;
-const pydtChannel = '698727225171902464';
 
 function exitError (err) {
 	console.error(err);
@@ -64,7 +65,7 @@ function exitError (err) {
 
 // Setup Discord
 
-const bot = new Discord.Client({ token: require('./bot.json').token });
+const bot = new Discord.Client({ token: config.discord.clientToken });
 
 const botReady = new Promise((resolve, reject) => {
 	bot.on('ready',      resolve);
@@ -104,7 +105,7 @@ app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
 
 
 		bot.sendMessage({
-			to: pydtChannel,
+			to: config.discord.targetChannel,
 			message: message
 		}, (err, response) => {
 			if (err) console.error(err);
@@ -113,8 +114,8 @@ app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
 	}).catch(console.error);
 });
 
-app.listen(7532, (err) => {
+app.listen(config.http.port, (err) => {
 	if (err) exitError(err);
-	else console.log('Listening on 7532');
+	else console.log(`Listening on ${config.http.port}`);
 });
 

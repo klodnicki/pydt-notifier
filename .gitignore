@@ -1,6 +1,6 @@
 ## Custom
-# Contains secret token.  Do not publish.
-bot.json
+# Contains secret tokens.  Do not publish.
+config.json
 
 ## Node
 # Logs
