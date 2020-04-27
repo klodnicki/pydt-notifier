@@ -52,7 +52,7 @@ pipeline {
                     mv api api.old
                     mv api.new api
                     systemctl --user daemon-reload
-                    systemctl --user restart com-klodnicki-photos-api.service
+                    systemctl --user restart com-klodnicki-pydt-notifier
                     rm -rf api.old
                 '''
             } }
