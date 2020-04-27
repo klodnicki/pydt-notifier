@@ -96,6 +96,8 @@ botReady.then((event) => {
 
 const app = express();
 
+app.get('/', (req, res) => res.send('Up and running!'));
+
 app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
 	res.send();
 
