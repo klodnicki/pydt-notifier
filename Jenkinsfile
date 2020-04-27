@@ -36,10 +36,10 @@ pipeline {
                 sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.tgz', into: 'api.new'
                 sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.service', into: 'api.new'
                 sshCommand remote: remote, command: '''
-                    cd api.new
-                    npm i com-klodnicki-pydt-notifier.tgz
-                    rm com-klodnicki-pydt-notifier.tgz
-                    mkdir -p ~/.config/systemd/user/
+                    cd api.new &&
+                    npm i com-klodnicki-pydt-notifier.tgz &&
+                    rm com-klodnicki-pydt-notifier.tgz &&
+                    mkdir -p ~/.config/systemd/user/ &&
                     mv com-klodnicki-pydt-notifier.service ~/.config/systemd/user/com-klodnicki-pydt-notifier.service
                 '''
             } }
@@ -48,11 +48,11 @@ pipeline {
         stage('Deploy') {
             steps { script {
                 sshCommand remote: remote, command: '''
-                    mkdir -p api
-                    mv api api.old
-                    mv api.new api
-                    systemctl --user daemon-reload
-                    systemctl --user restart com-klodnicki-pydt-notifier
+                    mkdir -p api &&
+                    mv api api.old &&
+                    mv api.new api &&
+                    systemctl --user daemon-reload &&
+                    systemctl --user restart com-klodnicki-pydt-notifier &&
                     rm -rf api.old
                 '''
             } }
