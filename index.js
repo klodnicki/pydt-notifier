@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+const fs = require('fs-extra');
+const path = require('path');
+const child_process = require('child_process');
 const Discord = require('discord.io');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -116,8 +119,42 @@ app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
 	}).catch(console.error);
 });
 
-app.listen(config.http.port, (err) => {
-	if (err) exitError(err);
-	else console.log(`Listening on ${config.http.port}`);
-});
+(async () => {
+	const socket = config.http.socket
+	  ? path.resolve(config.http.socket)
+	  : null;
 
+	if (socket) {
+		if (await fs.exists(socket)) {
+			await fs.unlink(socket);
+		}
+	}
+
+	await new Promise((resolve, reject) => {
+		app.listen(config.http.socket || config.http.port, err => {
+			if (err) reject(err);
+			else resolve();
+		});
+	});
+
+	if (socket) {
+		await new Promise((resolve, reject) => {
+			child_process.exec(`chgrp www-data '${socket}'`, err => {
+				if (err) reject(err);
+				else resolve();
+			});
+		});
+		await new Promise((resolve, reject) => {
+			child_process.exec(`chmod 770 '${socket}'`, err => {
+				if (err) reject(err);
+				else resolve();
+			});
+		});
+	}
+
+	console.log(`Listening on ${socket || config.http.port}`);
+
+})().catch(err => {
+	console.error(err);
+	process.exit(1);
+});
