@@ -1,8 +1,14 @@
 [Unit]
 Description=com-klodnicki-pydt-notifier
 
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
 [Service]
 ExecStart=/var/www/com/klodnicki/pydt-notifier/api/node_modules/.bin/com-klodnicki-pydt-notifier /var/www/com/klodnicki/pydt-notifier/.config/com-klodnicki-pydt-notifier/config.json
+
+Restart=on-failure
+RestartSec=1s
 
 [Install]
 WantedBy=multi-user.target
