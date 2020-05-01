@@ -3,6 +3,9 @@ const path = require('path');
 const child_process = require('child_process');
 const express = require('express');
 const bodyParser = require('body-parser');
+const { promisify } = require('util');
+
+const exec = promisify(child_process.exec);
 
 const config = require('./config');
 
@@ -30,26 +33,12 @@ async function startExpressServer(bot) {
 		}
 	}
 
-	await new Promise((resolve, reject) => {
-		app.listen(config.http.socket || config.http.port, err => {
-			if (err) reject(err);
-			else resolve();
-		});
-	});
+	await promisify(app.listen)
+			.call(app, config.http.socket || config.http.port);
 
 	if (socket) {
-		await new Promise((resolve, reject) => {
-			child_process.exec(`chgrp www-data '${socket}'`, err => {
-				if (err) reject(err);
-				else resolve();
-			});
-		});
-		await new Promise((resolve, reject) => {
-			child_process.exec(`chmod 770 '${socket}'`, err => {
-				if (err) reject(err);
-				else resolve();
-			});
-		});
+		await exec(`chgrp www-data '${socket}'`);
+		await exec(`chmod 770 '${socket}'`);
 	}
 
 	console.log(`Listening on ${socket || config.http.port}`);

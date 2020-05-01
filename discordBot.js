@@ -90,15 +90,10 @@ class DiscordBot extends Discord.Client {
     }
 
     sendMessage(options) {
-        return new Promise((resolve, reject) => {
-            super.sendMessage({
-                to: config.discord.targetChannel,
-                ...options
-            }, (err, response) => {
-                if(err) reject(err);
-                else resolve(response);
-            });
-        });
+		return util.promisify(super.sendMessage).call(this, {
+			to: config.discord.targetChannel,
+			...options
+		});
     }
 
     async notify(pydtNotification) {
