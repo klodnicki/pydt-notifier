@@ -3,8 +3,19 @@
 		"port": 7531
 	},
 	"discord": {
-		"clientToken": "",
-		"targetChannel": ""
+		"clientToken": ""
+	},
+	"games": {
+		"*": {
+			"targetChannel": "",
+			"players": [
+				{
+					"pydtName": "me",
+					"friendlyName": "Me",
+					"discordId": ""
+				}
+			]
+		}
 	},
 	"testNotification": {
 		"gameName": "Klodnicki CIV6 - 1",
