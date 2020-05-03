@@ -69,12 +69,13 @@ class DiscordBot extends Discord.Client {
         return new Promise((resolve, reject) => {
             console.log(`Logging into Discord...`);
 
-            this.once('disconnect', (errMsg, code) => {
-                console.log('hey');
+			const rejectCallback = (errMsg, code) => {
                 reject({errMsg, code});
-            });
+            };
+            this.once('disconnect', rejectCallback);
 
             this.once('ready', () => {
+				this.removeListener('disconnect', rejectCallback);
                 console.log(`Logged into Discord as ${this.username} - ${this.id}.`);
 
                 this.on('disconnect', (errMsg, code) => {
