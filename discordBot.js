@@ -46,6 +46,8 @@ class DiscordBot extends Discord.Client {
     }
 
     waitForConnection() {
+		if (this.connected) return;
+
         return new Promise((resolve, reject) => {
             console.log(`Logging into Discord...`);
 
@@ -96,6 +98,7 @@ class DiscordBot extends Discord.Client {
 
 		const message = `${thanksMessage} ${promptMessage}`;
 
+		await this.waitForConnection();
 		process.stdout.write(`${gameName}: Sending ${JSON.stringify(message)}... `);
 		try {
 			await this.sendMessage({ to: gameEntry.discord.targetChannel, message });
