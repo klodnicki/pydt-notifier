@@ -36,26 +36,6 @@ const promptMessages = new ExtArray(
 	(name) => `${name} is up!`,
 );
 
-const people = [
-	{
-		pydtName: 'klod.zack',
-		friendlyName: 'Zack',
-		discordId: '303699009401389057',
-		prevPlayer: () => people[2]
-	}, {
-		pydtName: 'johnnyklod',
-		friendlyName: 'John',
-		discordId: '303678504690515969',
-		prevPlayer: () => people[0]
-	}, {
-		pydtName: 'ZER0',
-		friendlyName: 'Josh',
-		discordId: '303669109902802945',
-		prevPlayer: () => people[1]
-	}
-];
-
-
 class DiscordBot extends Discord.Client {
     constructor(opts) {
         super({
@@ -79,7 +59,7 @@ class DiscordBot extends Discord.Client {
                 console.log(`Logged into Discord as ${this.username} - ${this.id}.`);
 
                 this.on('disconnect', (errMsg, code) => {
-                    throw new Error(`Discord disconnected with code ${code}: ${errMsg}`);
+                    console.log(`Discord disconnected with code ${code}: ${errMsg}`);
                 });
 
                 resolve(this);
