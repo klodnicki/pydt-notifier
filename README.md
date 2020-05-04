@@ -28,14 +28,14 @@ If you want extra data to use (lists of messages, player attributes, etc), there
 ### Helpers
 
 - `source str`: Simple template the given string. Convenient for compartmentalizing different parts of your message.
-- `discordTag player`: It expects a player object (e.x. `nextPlayer` or `prevPlayer`) and inserts a Discord tag toward that person. You cannot customize the name that is displayed, that's a Discord limitation.
+- `discordTag player`: It expects a player object (e.g. `nextPlayer` or `prevPlayer`) and inserts a Discord tag toward that person. You cannot customize the name that is displayed, that's a Discord limitation.
 - `randomMessageIn arr`: It expects an array of strings. It will pick a random one and template it.
 
 ### Complex Example
 
 Here is an example config file with complex templating logic:
 
-```js
+```json
 {
     "http": {
         "port": 7531
@@ -106,9 +106,9 @@ Here is an example config file with complex templating logic:
 
 Suppose that Player A just finished their turn, so now Player B is up.
 
-- - The templating engine starts with the root `message`: 
-- `"{{ game.messageData.customName }}: {{ source thanksPart }} {{ source upNextPart }}"`.
-- - This is just an easy substitution. It'll find the game config and substite in `messageData.customName`, which is set to `"Our First Game"`.
+- - The templating engine starts with the root `message`:
+- `"{{ game.messageData.customName }}: {{ source thanksPart }} {{ source upNextPart }}"`
+- - This is just an easy substitution. It'll find the game config and substitute in `messageData.customName`, which is set to `"Our First Game"`.
 - `"Our First Game: {{ source thanksPart }} {{ source upNextPart }}"`
 - - `source` is a helper, and `thanksPart` is a string defined in `messageData`. It substitutes that string in and templates it.
 - `"Our First Game: {{#if prevPlayer.messageData.customThanks}}{{randomMessageIn prevPlayer.messageData.customThanks}}{{else}}{{ randomMessageIn thanksMessages }}{{/if}} {{ source upNextPart }}"`
@@ -123,5 +123,5 @@ Suppose that Player A just finished their turn, so now Player B is up.
 - - `upNextMessages` is defined in `messageData`. `randomMessageIn` will pick a random string from there and template it.
 - `"Our First Game: A just finished the perfect turn. You're up, {{discordTag nextPlayer}}!`
 - - This last one is easy, it will "at" the next player (Player B) in the Discord message.
-- `"Our First Game: A just finished the perfect turn. You're up, <@PlayerB>!"
+- `"Our First Game: A just finished the perfect turn. You're up, <@PlayerB>!"`
 
