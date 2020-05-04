@@ -1,31 +1,31 @@
 {
-	"http": {
-		"port": 7531
-	},
-	"discord": {
-		"clientToken": ""
-	},
-	"games": {
-		"*": {
-			"targetChannel": "",
-			"players": [
-				{
-					"pydtName": "me",
-					"friendlyName": "Me",
-					"discordId": ""
-				}
-			]
-		}
-	},
-	"message": "{{ discordTag nextPlayer }} is up.",
-	"testNotification": {
-		"gameName": "Klodnicki CIV6 - 1",
-		"userName": "klod.zack",
-		"round": 4,
-		"civName": "England",
-		"leaderName": "Victoria",
-		"value1": "Klodnicki CIV6 - 1",
-		"value2": "klod.zack",
-		"value3": 4
-	}
+    "http": {
+        "port": 7531
+    },
+    "discord": {
+        "clientToken": ""
+    },
+    "games": {
+        "*": {
+            "targetChannel": "",
+            "players": [
+                {
+                    "pydtName": "me",
+                    "friendlyName": "Me",
+                    "discordId": ""
+                }
+            ]
+        }
+    },
+    "message": "{{ discordTag nextPlayer }} is up.",
+    "testNotification": {
+        "gameName": "Klodnicki CIV6 - 1",
+        "userName": "klod.zack",
+        "round": 4,
+        "civName": "England",
+        "leaderName": "Victoria",
+        "value1": "Klodnicki CIV6 - 1",
+        "value2": "klod.zack",
+        "value3": 4
+    }
 }

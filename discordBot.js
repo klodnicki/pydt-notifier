@@ -10,23 +10,23 @@ class DiscordBot extends Discord.Client {
             token: config.discord.clientToken,
             ...(opts || {}),
             autorun: false
-		});
-		this.messageGenerator = new MessageGenerator();
+        });
+        this.messageGenerator = new MessageGenerator();
     }
 
     waitForConnection() {
-		if (this.connected) return;
+        if (this.connected) return;
 
         return new Promise((resolve, reject) => {
             console.log(`Logging into Discord...`);
 
-			const rejectCallback = (errMsg, code) => {
+            const rejectCallback = (errMsg, code) => {
                 reject({errMsg, code});
             };
             this.once('disconnect', rejectCallback);
 
             this.once('ready', () => {
-				this.removeListener('disconnect', rejectCallback);
+                this.removeListener('disconnect', rejectCallback);
                 console.log(`Logged into Discord as ${this.username} - ${this.id}.`);
 
                 this.on('disconnect', (errMsg, code) => {
@@ -43,36 +43,36 @@ class DiscordBot extends Discord.Client {
     }
 
     sendMessage(options) {
-		return util.promisify(super.sendMessage).call(this, options);
+        return util.promisify(super.sendMessage).call(this, options);
     }
 
     async notify(pydtNotification) {
-		const [gameName, gameEntry] = Object.entries(config.games).find(([name, obj]) => name === '*' || name === pydtNotification.gameName) || [];
-		if (gameEntry === undefined) {
-			console.log('Unrecognized game: ' + pydtNotification.gameName);
-			return;
-		}
+        const [gameName, gameEntry] = Object.entries(config.games).find(([name, obj]) => name === '*' || name === pydtNotification.gameName) || [];
+        if (gameEntry === undefined) {
+            console.log('Unrecognized game: ' + pydtNotification.gameName);
+            return;
+        }
 
-		const nextPlayerI = gameEntry.players.findIndex(p => p.pydtName === pydtNotification.userName);
-		if (nextPlayerI === -1) {
-			console.log('Unrecognized player: ' + pydtNotification.userName + ' in game ' + gameName);
-			return;
-		}
+        const nextPlayerI = gameEntry.players.findIndex(p => p.pydtName === pydtNotification.userName);
+        if (nextPlayerI === -1) {
+            console.log('Unrecognized player: ' + pydtNotification.userName + ' in game ' + gameName);
+            return;
+        }
 
-		const nextPlayer = gameEntry.players[nextPlayerI];
-		const prevPlayer = gameEntry.players[mod(nextPlayerI - 1, gameEntry.players.length)];
+        const nextPlayer = gameEntry.players[nextPlayerI];
+        const prevPlayer = gameEntry.players[mod(nextPlayerI - 1, gameEntry.players.length)];
 
-		const message = this.messageGenerator.generateMessage(prevPlayer, nextPlayer, gameName, gameEntry);
+        const message = this.messageGenerator.generateMessage(prevPlayer, nextPlayer, gameName, gameEntry);
 
-		await this.waitForConnection();
-		process.stdout.write(`${gameName}: Sending ${JSON.stringify(message)}... `);
-		try {
-			await this.sendMessage({ to: gameEntry.discord.targetChannel, message });
-		} catch(e) {
-			process.stdout.write('\n');
-			throw e;
-		}
-		process.stdout.write('done.\n');
+        await this.waitForConnection();
+        process.stdout.write(`${gameName}: Sending ${JSON.stringify(message)}... `);
+        try {
+            await this.sendMessage({ to: gameEntry.discord.targetChannel, message });
+        } catch(e) {
+            process.stdout.write('\n');
+            throw e;
+        }
+        process.stdout.write('done.\n');
     }
 }
 

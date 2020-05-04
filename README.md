@@ -37,70 +37,70 @@ Here is an example config file with complex templating logic:
 
 ```js
 {
-	"http": {
-		"port": 7531
-	},
-	"discord": {
-		"clientToken": "..."
-	},
-	"games": {
-		"My Game": {
-			"discord": {
-				"targetChannel": "..."
-			},
-			"players": [
-				{
-					"pydtName": "playera",
-					"friendlyName": "Player A",
-					"discordId": "...",
-					"messageData": {
-						"customThanks": [
+    "http": {
+        "port": 7531
+    },
+    "discord": {
+        "clientToken": "..."
+    },
+    "games": {
+        "My Game": {
+            "discord": {
+                "targetChannel": "..."
+            },
+            "players": [
+                {
+                    "pydtName": "playera",
+                    "friendlyName": "Player A",
+                    "discordId": "...",
+                    "messageData": {
+                        "customThanks": [
                             "A just finished the perfect turn.",
                             "A, your turns are always awesome."
-						]
-					}
-				},
-				{
-					"pydtName": "playerb",
-					"friendlyName": "Player B",
-					"discordId": "...",
-					"messageData": {
+                        ]
+                    }
+                },
+                {
+                    "pydtName": "playerb",
+                    "friendlyName": "Player B",
+                    "discordId": "...",
+                    "messageData": {
                         "customUpNext": [
                             "Let's see what {{ discordTag nextPlayer }} is going to screw up this time.",
                             "Oh no, {{ discordTag nextPlayer }} is up next!"
                         ]
                     }
-				},
-				{
-					"pydtName": "playerc",
-					"friendlyName": "Player C",
-					"discordId": "...",
-					"messageData": {
+                },
+                {
+                    "pydtName": "playerc",
+                    "friendlyName": "Player C",
+                    "discordId": "...",
+                    "messageData": {
                         "customUpNext": [
                             "Let's see what {{ discordTag nextPlayer }} is going to screw up this time.",
                             "Oh no, {{ discordTag nextPlayer }} is up next!"
                         ]
                     }
-				}
-			],
-			"messageData": {
+                }
+            ],
+            "messageData": {
                 "customName": "Our First Game"
             }
-		}
-	},
-	"message": "{{ game.messageData.customName }}: {{ source thanksPart }} {{ source upNextPart }}",
-	"messageData": {
-		"thanksPart": "{{#if prevPlayer.messageData.customThanks}}{{randomMessageIn prevPlayer.messageData.customThanks}}{{else}}{{ randomMessageIn thanksMessages }}{{/if}}",
-		"upNextPart": "{{#if nextPlayer.messageData.customUpNext}}{{randomMessageIn nextPlayer.messageData.customUpNext}}{{else}}{{ randomMessageIn upNextMessages }}{{/if}}",
-		"thanksMessages": [
-			"Thanks for doing your turn, {{prevPlayer.friendlyName}}!",
-			"Thanks, {{prevPlayer.friendlyName}}, for doing your turn!"
-		],
-		"upNextMessages": [
-			"How will you respond, {{discordTag nextPlayer}}?",
-			"You're up, {{discordTag nextPlayer}}!"
-		]
-	}
+        }
+    },
+    "message": "{{ game.messageData.customName }}: {{ source thanksPart }} {{ source upNextPart }}",
+    "messageData": {
+        "thanksPart": "{{#if prevPlayer.messageData.customThanks}}{{randomMessageIn prevPlayer.messageData.customThanks}}{{else}}{{ randomMessageIn thanksMessages }}{{/if}}",
+        "upNextPart": "{{#if nextPlayer.messageData.customUpNext}}{{randomMessageIn nextPlayer.messageData.customUpNext}}{{else}}{{ randomMessageIn upNextMessages }}{{/if}}",
+        "thanksMessages": [
+            "Thanks for doing your turn, {{prevPlayer.friendlyName}}!",
+            "Thanks, {{prevPlayer.friendlyName}}, for doing your turn!"
+        ],
+        "upNextMessages": [
+            "How will you respond, {{discordTag nextPlayer}}?",
+            "You're up, {{discordTag nextPlayer}}!"
+        ]
+    }
 }
 ```
 
