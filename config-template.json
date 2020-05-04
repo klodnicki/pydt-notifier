@@ -17,6 +17,7 @@
 			]
 		}
 	},
+	"message": "{{ discordTag nextPlayer }} is up.",
 	"testNotification": {
 		"gameName": "Klodnicki CIV6 - 1",
 		"userName": "klod.zack",

@@ -2,39 +2,7 @@ const util = require('util');
 const Discord = require('discord.io');
 const config = require('./config');
 const { mod } = require('./utils');
-
-class ExtArray extends Array {
-	random () {
-		// Use `Object.keys()` to work w/ sparse arrays
-		const keys = Object.keys(this);
-		return this[keys[Math.floor(Math.random()*keys.length)]];
-	}
-}
-
-const thanksMessages = new ExtArray(
-	(name) => `Thanks for doing your turn, ${name}!`,
-	(name) => `Thanks, ${name}, for doing your turn!`,
-	(name) => `Good job, ${name}!`,
-	(name) => `Done and done by ${name}.`,
-	(name) => `An excellent turn completion by ${name}.`,
-	(name) => `WHAT A MOVE! ${name} is really shaking up the world.`,
-	(name) => `Power play by ${name}!`,
-	(name) => `${name}, I did *not* see that coming!`,
-	(name) => `*Smashing* maneuver by ${name}!`,
-	(name) => `Interesting move, ${name}.`
-);
-
-const promptMessages = new ExtArray(
-	(name) => `Let's see how ${name} responds.`,
-	(name) => `${name} is up now - let's see what happens.`,
-	(name) => `How will you respond, ${name}?`,
-	(name) => `How will ${name} respond?`,
-	(name) => `You're up, ${name}!`,
-	(name) => `${name} is up next!`,
-	(name) => `Time for ${name} to go!`,
-	(name) => `Don't be slow, ${name}!`,
-	(name) => `${name} is up!`,
-);
+const { MessageGenerator } = require('./messageGenerator');
 
 class DiscordBot extends Discord.Client {
     constructor(opts) {
@@ -42,7 +10,8 @@ class DiscordBot extends Discord.Client {
             token: config.discord.clientToken,
             ...(opts || {}),
             autorun: false
-        });
+		});
+		this.messageGenerator = new MessageGenerator();
     }
 
     waitForConnection() {
@@ -93,10 +62,7 @@ class DiscordBot extends Discord.Client {
 		const nextPlayer = gameEntry.players[nextPlayerI];
 		const prevPlayer = gameEntry.players[mod(nextPlayerI - 1, gameEntry.players.length)];
 
-		const thanksMessage = thanksMessages.random()(prevPlayer.friendlyName);
-		const promptMessage = promptMessages.random()(`<@${nextPlayer.discordId}>`);
-
-		const message = `${thanksMessage} ${promptMessage}`;
+		const message = this.messageGenerator.generateMessage(prevPlayer, nextPlayer, gameName, gameEntry);
 
 		await this.waitForConnection();
 		process.stdout.write(`${gameName}: Sending ${JSON.stringify(message)}... `);
