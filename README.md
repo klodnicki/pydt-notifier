@@ -28,87 +28,87 @@ If you want extra data to use (lists of messages, player attributes, etc), there
 ### Helpers
 
 - `source str`: Simple template the given string. Convenient for compartmentalizing different parts of your message.
-- `discordTag player`: It expects a player object (e.x. `nextPlayer` or `prevPlayer`) and inserts a Discord tag toward that person. You cannot customize the name that is displayed, that's a Discord limitation.
+- `discordTag player`: It expects a player object (e.g. `nextPlayer` or `prevPlayer`) and inserts a Discord tag toward that person. You cannot customize the name that is displayed, that's a Discord limitation.
 - `randomMessageIn arr`: It expects an array of strings. It will pick a random one and template it.
 
 ### Complex Example
 
 Here is an example config file with complex templating logic:
 
-```js
+```json
 {
-	"http": {
-		"port": 7531
-	},
-	"discord": {
-		"clientToken": "..."
-	},
-	"games": {
-		"My Game": {
-			"discord": {
-				"targetChannel": "..."
-			},
-			"players": [
-				{
-					"pydtName": "playera",
-					"friendlyName": "Player A",
-					"discordId": "...",
-					"messageData": {
-						"customThanks": [
+    "http": {
+        "port": 7531
+    },
+    "discord": {
+        "clientToken": "..."
+    },
+    "games": {
+        "My Game": {
+            "discord": {
+                "targetChannel": "..."
+            },
+            "players": [
+                {
+                    "pydtName": "playera",
+                    "friendlyName": "Player A",
+                    "discordId": "...",
+                    "messageData": {
+                        "customThanks": [
                             "A just finished the perfect turn.",
                             "A, your turns are always awesome."
-						]
-					}
-				},
-				{
-					"pydtName": "playerb",
-					"friendlyName": "Player B",
-					"discordId": "...",
-					"messageData": {
+                        ]
+                    }
+                },
+                {
+                    "pydtName": "playerb",
+                    "friendlyName": "Player B",
+                    "discordId": "...",
+                    "messageData": {
                         "customUpNext": [
                             "Let's see what {{ discordTag nextPlayer }} is going to screw up this time.",
                             "Oh no, {{ discordTag nextPlayer }} is up next!"
                         ]
                     }
-				},
-				{
-					"pydtName": "playerc",
-					"friendlyName": "Player C",
-					"discordId": "...",
-					"messageData": {
+                },
+                {
+                    "pydtName": "playerc",
+                    "friendlyName": "Player C",
+                    "discordId": "...",
+                    "messageData": {
                         "customUpNext": [
                             "Let's see what {{ discordTag nextPlayer }} is going to screw up this time.",
                             "Oh no, {{ discordTag nextPlayer }} is up next!"
                         ]
                     }
-				}
-			],
-			"messageData": {
+                }
+            ],
+            "messageData": {
                 "customName": "Our First Game"
             }
-		}
-	},
-	"message": "{{ game.messageData.customName }}: {{ source thanksPart }} {{ source upNextPart }}",
-	"messageData": {
-		"thanksPart": "{{#if prevPlayer.messageData.customThanks}}{{randomMessageIn prevPlayer.messageData.customThanks}}{{else}}{{ randomMessageIn thanksMessages }}{{/if}}",
-		"upNextPart": "{{#if nextPlayer.messageData.customUpNext}}{{randomMessageIn nextPlayer.messageData.customUpNext}}{{else}}{{ randomMessageIn upNextMessages }}{{/if}}",
-		"thanksMessages": [
-			"Thanks for doing your turn, {{prevPlayer.friendlyName}}!",
-			"Thanks, {{prevPlayer.friendlyName}}, for doing your turn!"
-		],
-		"upNextMessages": [
-			"How will you respond, {{discordTag nextPlayer}}?",
-			"You're up, {{discordTag nextPlayer}}!"
-		]
-	}
+        }
+    },
+    "message": "{{ game.messageData.customName }}: {{ source thanksPart }} {{ source upNextPart }}",
+    "messageData": {
+        "thanksPart": "{{#if prevPlayer.messageData.customThanks}}{{randomMessageIn prevPlayer.messageData.customThanks}}{{else}}{{ randomMessageIn thanksMessages }}{{/if}}",
+        "upNextPart": "{{#if nextPlayer.messageData.customUpNext}}{{randomMessageIn nextPlayer.messageData.customUpNext}}{{else}}{{ randomMessageIn upNextMessages }}{{/if}}",
+        "thanksMessages": [
+            "Thanks for doing your turn, {{prevPlayer.friendlyName}}!",
+            "Thanks, {{prevPlayer.friendlyName}}, for doing your turn!"
+        ],
+        "upNextMessages": [
+            "How will you respond, {{discordTag nextPlayer}}?",
+            "You're up, {{discordTag nextPlayer}}!"
+        ]
+    }
 }
 ```
 
 Suppose that Player A just finished their turn, so now Player B is up.
 
-- - The templating engine starts with the root `message`: 
-- `"{{ game.messageData.customName }}: {{ source thanksPart }} {{ source upNextPart }}"`.
-- - This is just an easy substitution. It'll find the game config and substite in `messageData.customName`, which is set to `"Our First Game"`.
+- - The templating engine starts with the root `message`:
+- `"{{ game.messageData.customName }}: {{ source thanksPart }} {{ source upNextPart }}"`
+- - This is just an easy substitution. It'll find the game config and substitute in `messageData.customName`, which is set to `"Our First Game"`.
 - `"Our First Game: {{ source thanksPart }} {{ source upNextPart }}"`
 - - `source` is a helper, and `thanksPart` is a string defined in `messageData`. It substitutes that string in and templates it.
 - `"Our First Game: {{#if prevPlayer.messageData.customThanks}}{{randomMessageIn prevPlayer.messageData.customThanks}}{{else}}{{ randomMessageIn thanksMessages }}{{/if}} {{ source upNextPart }}"`
@@ -123,5 +123,5 @@ Suppose that Player A just finished their turn, so now Player B is up.
 - - `upNextMessages` is defined in `messageData`. `randomMessageIn` will pick a random string from there and template it.
 - `"Our First Game: A just finished the perfect turn. You're up, {{discordTag nextPlayer}}!`
 - - This last one is easy, it will "at" the next player (Player B) in the Discord message.
-- `"Our First Game: A just finished the perfect turn. You're up, <@PlayerB>!"
+- `"Our First Game: A just finished the perfect turn. You're up, <@PlayerB>!"`
 

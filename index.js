@@ -7,13 +7,13 @@ const config = require('./config');
 
 (async () => {
 
-	const bot = await new DiscordBot().waitForConnection();
+    const bot = await new DiscordBot().waitForConnection();
 
-	if (config.testNotification) await bot.notify(config.testNotification);
+    if (config.testNotification) await bot.notify(config.testNotification);
 
-	await startExpressServer(bot);
+    await startExpressServer(bot);
 
 })().catch(err => {
-	console.error(err);
-	process.exit(1);
+    console.error(err);
+    process.exit(1);
 });
