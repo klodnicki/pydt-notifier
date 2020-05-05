@@ -19,7 +19,6 @@ class MessageGenerator {
         });
 
         this.handlebars.registerHelper('discordTag', function(player, options) {
-            console.dir(player);
             return new Handlebars.SafeString(`<@${player.discordId}>`);
         });
 
