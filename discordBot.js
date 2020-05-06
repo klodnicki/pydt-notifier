@@ -20,8 +20,9 @@ class DiscordBot extends Discord.Client {
         console.log(`Logging into Discord...`);
 
         await new Promise((resolve, reject) => {
-            const rejectCallback = (errMsg, code) => {
-                reject({errMsg, code});
+            const rejectCallback = (errMsg, errCode) => {
+                const err = new Error('Failed to connect to Discord');
+                reject(Object.assign(err, {errMsg, errCode}));
             };
             this.once('disconnect', rejectCallback);
 
