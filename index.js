@@ -7,7 +7,7 @@ const config = require('./config');
 
 (async () => {
 
-    const bot = await new DiscordBot().waitForConnection();
+    const bot = await new DiscordBot().connect();
 
     if (config.testNotification) await bot.notify(config.testNotification);
 

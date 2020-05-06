@@ -14,7 +14,7 @@ class DiscordBot extends Discord.Client {
         this.messageGenerator = new MessageGenerator();
     }
 
-    waitForConnection() {
+    connect() {
         if (this.connected) return;
 
         return new Promise((resolve, reject) => {
@@ -38,7 +38,7 @@ class DiscordBot extends Discord.Client {
 
             this.once('error', reject);
 
-            this.connect();
+            super.connect();
         });
     }
 
@@ -64,7 +64,7 @@ class DiscordBot extends Discord.Client {
 
         const message = this.messageGenerator.generateMessage(prevPlayer, nextPlayer, gameName, gameEntry);
 
-        await this.waitForConnection();
+        await this.connect();
         process.stdout.write(`${gameName}: Sending ${JSON.stringify(message)}... `);
         try {
             await this.sendMessage({ to: gameEntry.discord.targetChannel, message });
