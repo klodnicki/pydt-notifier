@@ -17,9 +17,9 @@ class DiscordBot extends Discord.Client {
     connect() {
         if (this.connected) return Promise.resolve(this);
 
-        return new Promise((resolve, reject) => {
-            console.log(`Logging into Discord...`);
+        console.log(`Logging into Discord...`);
 
+        return new Promise((resolve, reject) => {
             const rejectCallback = (errMsg, code) => {
                 reject({errMsg, code});
             };
@@ -27,18 +27,20 @@ class DiscordBot extends Discord.Client {
 
             this.once('ready', () => {
                 this.removeListener('disconnect', rejectCallback);
-                console.log(`Logged into Discord as ${this.username} - ${this.id}.`);
-
-                this.on('disconnect', (errMsg, code) => {
-                    console.log(`Discord disconnected with code ${code}: ${errMsg}`);
-                });
-
                 resolve(this);
             });
 
             this.once('error', reject);
 
             super.connect();
+        }).then(() => {
+            console.log(`Logged into Discord as ${this.username} - ${this.id}.`);
+
+            this.on('disconnect', (errMsg, code) => {
+                console.log(`Discord disconnected with code ${code}: ${errMsg}`);
+            });
+
+            return this;
         });
     }
 
