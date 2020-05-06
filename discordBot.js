@@ -14,12 +14,12 @@ class DiscordBot extends Discord.Client {
         this.messageGenerator = new MessageGenerator();
     }
 
-    connect() {
-        if (this.connected) return Promise.resolve(this);
+    async connect() {
+        if (this.connected) return this;
 
         console.log(`Logging into Discord...`);
 
-        return new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
             const rejectCallback = (errMsg, code) => {
                 reject({errMsg, code});
             };
@@ -27,21 +27,21 @@ class DiscordBot extends Discord.Client {
 
             this.once('ready', () => {
                 this.removeListener('disconnect', rejectCallback);
-                resolve(this);
+                resolve();
             });
 
             this.once('error', reject);
 
             super.connect();
-        }).then(() => {
-            console.log(`Logged into Discord as ${this.username} - ${this.id}.`);
-
-            this.on('disconnect', (errMsg, code) => {
-                console.log(`Discord disconnected with code ${code}: ${errMsg}`);
-            });
-
-            return this;
         });
+
+        console.log(`Logged into Discord as ${this.username} - ${this.id}.`);
+
+        this.on('disconnect', (errMsg, code) => {
+            console.log(`Discord disconnected with code ${code}: ${errMsg}`);
+        });
+
+        return this;
     }
 
     sendMessage(options) {
