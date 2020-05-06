@@ -7,7 +7,9 @@
     },
     "games": {
         "*": {
-            "targetChannel": "",
+            "discord": {
+                "targetChannel": ""
+            },
             "players": [
                 {
                     "pydtName": "me",
