@@ -15,7 +15,7 @@ class DiscordBot extends Discord.Client {
     }
 
     connect() {
-        if (this.connected) return;
+        if (this.connected) return Promise.resolve(this);
 
         return new Promise((resolve, reject) => {
             console.log(`Logging into Discord...`);
