@@ -12,9 +12,20 @@ class DiscordBot extends Discord.Client {
             autorun: false
         });
         this.messageGenerator = new MessageGenerator();
+
+        // The `Discord.Client` constructor assigns a bound `connect()` as a
+        // property on the instance, it is not directly inherited from
+        // `Discord.Client.prototype`.  Therefore it cannot be extended
+        // normally with `super.connect()`.  Work around that by reassigning
+        // to another name.
+        Object.defineProperty(this, '_superConnect',
+                Object.getOwnPropertyDescriptor(this, 'connect'));
+        this.connect = this._connect;
     }
 
-    async connect() {
+    // This must be named differently so the `Discord.Client` constructor
+    // finds the original function
+    async _connect() {
         if (this.connected) return this;
 
         console.log(`Logging into Discord...`);
@@ -33,7 +44,7 @@ class DiscordBot extends Discord.Client {
 
             this.once('error', reject);
 
-            super.connect();
+            this._superConnect();
         });
 
         console.log(`Logged into Discord as ${this.username} - ${this.id}.`);
