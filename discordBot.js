@@ -61,6 +61,8 @@ class DiscordBot extends Discord.Client {
     }
 
     async notify(pydtNotification) {
+        const connected = this.connect();
+
         const [gameName, gameEntry] = Object.entries(config.games).find(([name, obj]) => name === '*' || name === pydtNotification.gameName) || [];
         if (gameEntry === undefined) {
             console.log('Unrecognized game: ' + pydtNotification.gameName);
@@ -78,7 +80,7 @@ class DiscordBot extends Discord.Client {
 
         const message = this.messageGenerator.generateMessage(prevPlayer, nextPlayer, gameName, gameEntry);
 
-        await this.connect();
+        await connected;
         process.stdout.write(`${gameName}: Sending ${JSON.stringify(message)}... `);
         try {
             await this.sendMessage({ to: gameEntry.discord.targetChannel, message });
