@@ -9,13 +9,16 @@ const exec = promisify(child_process.exec);
 
 const config = require('./config');
 
-async function startExpressServer(bot) {
+async function startExpressServer(callback) {
+    if (typeof callback !== 'function')
+        throw new Error('Callback is not a function');
+
     const app = express();
 
     app.get('/', (req, res) => res.send('Up and running!'));
 
     app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
-        bot.notify(req.body)
+        Promise.resolve(callback(req.body))
             .then(() => res.send())
             .catch(e => {
                 console.error(e);

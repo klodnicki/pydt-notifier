@@ -11,7 +11,7 @@ const config = require('./config');
 
     if (config.testNotification) await bot.notify(config.testNotification);
 
-    await startExpressServer(bot);
+    await startExpressServer(bot.notify.bind(bot));
 
 })().catch(err => {
     console.error(err);
