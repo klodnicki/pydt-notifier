@@ -8,8 +8,7 @@ class DiscordBot extends Discord.Client {
     constructor(opts = {}) {
         super({
             token: config.discord.clientToken,
-            ...opts,
-            autorun: false
+            ...opts
         });
         this.messageGenerator = new MessageGenerator();
     }
