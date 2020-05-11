@@ -5,10 +5,10 @@ const { mod } = require('./utils');
 const { MessageGenerator } = require('./messageGenerator');
 
 class DiscordBot extends Discord.Client {
-    constructor(opts) {
+    constructor(opts = {}) {
         super({
             token: config.discord.clientToken,
-            ...(opts || {}),
+            ...opts,
             autorun: false
         });
         this.messageGenerator = new MessageGenerator();
