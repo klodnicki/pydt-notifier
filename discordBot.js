@@ -44,10 +44,6 @@ class DiscordBot extends Discord.Client {
         return this;
     }
 
-    sendMessage(options) {
-        return util.promisify(super.sendMessage).call(this, options);
-    }
-
     async notify(pydtNotification) {
         const connected = this.connect();
 
@@ -79,5 +75,10 @@ class DiscordBot extends Discord.Client {
         process.stdout.write('done.\n');
     }
 }
+
+// As of now (May 2020), there's no way to add a prototype method by
+// assignment from within the class body.  So we'll do it the old-school way.
+DiscordBot.prototype.sendMessage =
+        util.promisify(Discord.Client.prototype.sendMessage);
 
 module.exports = { DiscordBot };
