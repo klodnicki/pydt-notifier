@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const child_process = require('child_process');
 const express = require('express');
+const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const { promisify } = require('util');
 
@@ -14,6 +15,7 @@ async function startExpressServer(callback) {
         throw new Error('Callback is not a function');
 
     const app = express();
+    app.use(morgan('combined'));
 
     app.get('/', (req, res) => res.send('Up and running!'));
 
