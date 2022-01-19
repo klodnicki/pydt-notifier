@@ -20,6 +20,7 @@ async function startExpressServer(callback) {
     app.get('/', (req, res) => res.send('Up and running!'));
 
     app.post('/', bodyParser.json({type: '*/*'}), (req, res) => {
+        console.log({ type: 'requestMatched', headers: req.headers, body: req.body });
         Promise.resolve(callback(req.body))
             .then(() => res.send())
             .catch(e => {
