@@ -1,5 +1,6 @@
 const util = require('util');
 const Discord = require('discord.io');
+const Backoff = require('backo');
 const config = require('./config');
 const { mod } = require('./utils');
 const { MessageGenerator } = require('./messageGenerator');
@@ -13,11 +14,33 @@ class DiscordBot extends Discord.Client {
         this.messageGenerator = new MessageGenerator();
     }
 
+    async ensureConnected(...args) {
+        if (this.connected) return;
+        
+        this.connectingPromise = this.connectingPromise || (async () => {
+
+            const backoff = new Backoff({ min: 50, max: 60000 });
+            while(!this.connected) {
+                try {
+                    await this.connect(...args);
+                } catch(e) {
+                    console.error(e);
+                    await new Promise(r => setTimeout(r, backoff.duration()));
+                }
+            }
+            
+            this.connectingPromise = null;
+        })();
+
+        return await this.connectingPromise;
+    }
+
     async connect(...args) {
         if (this.connected) return this;
 
-        console.log(`Logging into Discord...`);
+        if (Math.random() < 0.75) await new Promise((resolve, reject) => setTimeout(() => reject(new Error('Uh oh!')), 0));
 
+        console.log(`Logging into Discord...`);
         await new Promise((resolve, reject) => {
             const rejectCallback = (errMsg, errCode) => {
                 const err = new Error('Failed to connect to Discord');
@@ -27,6 +50,7 @@ class DiscordBot extends Discord.Client {
 
             this.once('ready', () => {
                 this.removeListener('disconnect', rejectCallback);
+                setTimeout(resolve, 1); // Allow the stack to unwind before 
                 resolve();
             });
 
@@ -45,7 +69,7 @@ class DiscordBot extends Discord.Client {
     }
 
     async notify(pydtNotification) {
-        const connected = this.connect();
+        const connected = this.ensureConnected();
 
         const [gameName, gameEntry] = Object.entries(config.games).find(([name, obj]) => name === '*' || name === pydtNotification.gameName) || [];
         if (gameEntry === undefined) {
