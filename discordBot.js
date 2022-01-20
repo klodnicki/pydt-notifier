@@ -38,8 +38,6 @@ class DiscordBot extends Discord.Client {
     async connect(...args) {
         if (this.connected) return this;
 
-        if (Math.random() < 0.75) await new Promise((resolve, reject) => setTimeout(() => reject(new Error('Uh oh!')), 0));
-
         console.log(`Logging into Discord...`);
         await new Promise((resolve, reject) => {
             const rejectCallback = (errMsg, errCode) => {
