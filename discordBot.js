@@ -1,26 +1,31 @@
 const util = require('util');
-const Discord = require('discord.io');
+const { Client, Intents } = require('discord.js');
 const Backoff = require('backo');
 const config = require('./config');
 const { mod } = require('./utils');
 const { MessageGenerator } = require('./messageGenerator');
 
-class DiscordBot extends Discord.Client {
+class DiscordBot {
     constructor(opts = {}) {
-        super({
-            token: config.discord.clientToken,
+        this.client = new Client({
+            intents: Intents.FLAGS.GUILDS,
             ...opts
         });
+        this.client.token = config.discord.clientToken;
+
+        this.client.on('error', console.error);
+        this.client.on('warn',  console.warn);
+
         this.messageGenerator = new MessageGenerator();
     }
 
     async ensureConnected(...args) {
-        if (this.connected) return;
+        if (this.client.isReady()) return;
         
         this.connectingPromise = this.connectingPromise || (async () => {
 
             const backoff = new Backoff({ min: 50, max: 60000 });
-            while(!this.connected) {
+            while(!this.client.isReady()) {
                 try {
                     await this.connect(...args);
                 } catch(e) {
@@ -36,32 +41,17 @@ class DiscordBot extends Discord.Client {
     }
 
     async connect(...args) {
-        if (this.connected) return this;
+        if (this.client.isReady()) return this;
 
         console.log(`Logging into Discord...`);
-        await new Promise((resolve, reject) => {
-            const rejectCallback = (errMsg, errCode) => {
-                const err = new Error('Failed to connect to Discord');
-                reject(Object.assign(err, {errMsg, errCode}));
-            };
-            this.once('disconnect', rejectCallback);
 
-            this.once('ready', () => {
-                this.removeListener('disconnect', rejectCallback);
-                setTimeout(resolve, 1); // Allow the stack to unwind before 
-                resolve();
+        await this.client.login(...args)
+            .catch(err => {
+                console.error('Failed to connect to Discord');
+                throw err;
             });
 
-            this.once('error', reject);
-
-            super.connect(...args);
-        });
-
-        console.log(`Logged into Discord as ${this.username} - ${this.id}.`);
-
-        this.on('disconnect', (errMsg, code) => {
-            console.log(`Discord disconnected with code ${code}: ${errMsg}`);
-        });
+        console.log(`Logged into Discord as ${this.client.user.username} - ${this.client.user.id}.`);
 
         return this;
     }
@@ -87,9 +77,11 @@ class DiscordBot extends Discord.Client {
         const message = this.messageGenerator.generateMessage(prevPlayer, nextPlayer, gameName, gameEntry);
 
         await connected;
+        const channel = await this.client.channels.fetch(gameEntry.discord.targetChannel);
+
         process.stdout.write(`${gameName}: Sending ${JSON.stringify(message)}... `);
         try {
-            await this.sendMessage({ to: gameEntry.discord.targetChannel, message });
+            await channel.send(message);
         } catch(e) {
             process.stdout.write('\n');
             throw e;
@@ -97,10 +89,5 @@ class DiscordBot extends Discord.Client {
         process.stdout.write('done.\n');
     }
 }
-
-// As of now (May 2020), there's no way to add a prototype method by
-// assignment from within the class body.  So we'll do it the old-school way.
-DiscordBot.prototype.sendMessage =
-        util.promisify(Discord.Client.prototype.sendMessage);
 
 module.exports = { DiscordBot };
