@@ -28,6 +28,8 @@ class Bot {
 
         const message = this.messageGenerator.generateMessage(prevPlayer, nextPlayer, gameName, gameEntry);
 
+        await this.discordInterface.login();
+
         process.stdout.write(`${gameName}: Sending ${JSON.stringify(message)}... `);
         try {
             await this.discordInterface.sendToChannel(gameEntry.discord.targetChannel, message);
