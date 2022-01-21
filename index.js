@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 
-const { DiscordBot } = require('./discordBot');
+const { Bot } = require('./bot');
 const { startExpressServer } = require('./express');
 
 const config = require('./config');
 
 (async () => {
 
-    const bot = new DiscordBot();
-    await bot.ensureConnected();
+    const bot = new Bot();
 
     if (config.testNotification) await bot.notify(config.testNotification);
 
