@@ -3,10 +3,20 @@ const Discord = require('discord.js');
 
 class DiscordInterface {
     constructor() {
+        this.connecting = false;
+
         this.client = new Discord.Client({ intents: [] });
 
         this.client.on('error', console.error);
         this.client.on('warn',  console.warn);
+
+        this.login();
+    }
+
+    async login() {
+        if (this.client.isReady())  return this;
+        if (this.connecting)        return this.loginPromise.then(() => this);
+        this.connecting = true;
 
         this.loginPromise = (async () => {
             console.log('Logging into Discord...');
@@ -17,10 +27,14 @@ class DiscordInterface {
                 });
             console.log(`Logged into Discord as ${this.client.user.username}`);
         })();
+
+        await this.loginPromise
+            .finally(() => { this.connecting = false; });
+        return this;
     }
 
     async getChannel(id) {
-        await this.loginPromise;
+        await this.login();
         const channel = await this.client.channels.fetch(id);
         if (!channel.isText()) {
             throw new Error('Channel is not text!');
