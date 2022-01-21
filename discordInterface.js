@@ -10,7 +10,11 @@ class DiscordInterface {
         this.client.on('error', console.error);
         this.client.on('warn',  console.warn);
 
-        this.login();
+        this.login()
+            .catch(err => {
+                console.error(err);
+                process.exit(1);
+            });
     }
 
     async login() {
