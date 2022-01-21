@@ -7,7 +7,7 @@ class DiscordInterface {
         this.loginPromise = (async () => {
             console.log('Logging into Discord...');
             await this.client.login(config.discord.clientToken);
-            console.log(`Logged into Discord as ${this.client.application.name}`);
+            console.log(`Logged into Discord as ${this.client.user.username}`);
         })();
     }
 
