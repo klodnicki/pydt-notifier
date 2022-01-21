@@ -33,16 +33,16 @@ class DiscordInterface {
             this.client.once('ready', resolve);
             this.client.login(config.discord.clientToken)
                 .catch(reject);
+        })
+        .then(() => {
+            console.log(`Logged into Discord as ${this.client.user.username}`);
+        }, err => {
+            console.error('Failed to connect to Discord');
+            throw err;
         });
 
         await this.loginPromise
-            .catch(err => {
-                console.error('Failed to connect to Discord');
-                throw err;
-            })
             .finally(() => { this.connecting = false; });
-
-        console.log(`Logged into Discord as ${this.client.user.username}`);
 
         return this;
     }
