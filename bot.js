@@ -1,5 +1,4 @@
 const util = require('util');
-const Backoff = require('backo');
 const config = require('./config');
 const { mod } = require('./utils');
 const { MessageGenerator } = require('./messageGenerator');
