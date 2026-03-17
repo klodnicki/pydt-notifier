@@ -12,4 +12,4 @@ RestartSec=1s
 
 [Install]
 WantedBy=multi-user.target
-Alias=com-klodnicki-photos-api.service
+Alias=com-klodnicki-pydt-notifier.service
