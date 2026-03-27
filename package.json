@@ -40,7 +40,7 @@
     "discord.js": "^13.6.0",
     "express": "^5.2.0",
     "fs-extra": "^9.0.0",
-    "handlebars": "^4.7.7",
+    "handlebars": "^4.7.9",
     "morgan": "^1.10.1"
   },
   "devDependencies": {
