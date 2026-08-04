@@ -38,7 +38,7 @@ class MessageGenerator {
 
     generateMessage(prevPlayer, nextPlayer, gameName, game) {
         return this.base({
-            ...config.messageData,
+            messageData: config.messageData,
             prevPlayer,
             nextPlayer,
             gameName,
