@@ -1,5 +1,15 @@
 {
   "name": "Node 24 Dev Container",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:24",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.vscode-pull-request-github"
+      ]
+    }
+  },
   "postCreateCommand": "npm ci || true"
 }
