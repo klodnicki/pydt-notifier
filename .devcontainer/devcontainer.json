@@ -1,0 +1,5 @@
+{
+  "name": "Node 24 Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24",
+  "postCreateCommand": "npm ci || true"
+}
