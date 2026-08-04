@@ -1,18 +1,5 @@
 {
   "name": "Node 24 Dev Container",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:0-24",
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:1": {}
-  },
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "ms-vscode.vscode-node-azure-pack"
-      ]
-    }
-  },
-  "postCreateCommand": "[ -f package.json ] && npm install || true",
-  "remoteUser": "vscode"
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24",
+  "postCreateCommand": "npm ci || true"
 }
