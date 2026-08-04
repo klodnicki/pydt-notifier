@@ -20,6 +20,15 @@ pipeline {
                 sh 'npm i';
             }
         }
+
+        stage('Test') {
+            steps {
+                // Use CI install and run tests; ensure config is available for tests
+                sh 'npm ci --silent';
+                sh "PYDT_NOTIFIER_CONFIG=./config-template.json npm test --silent";
+            }
+        }
+
         stage('Build') {
             environment {
                 NODE_ENV = 'PRODUCTION'
