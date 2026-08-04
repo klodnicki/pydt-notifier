@@ -42,7 +42,7 @@
     "notifications"
   ],
   "dependencies": {
-    "body-parser": "^1.20.6",
+    "body-parser": "^2.0.0",
     "discord.js": "^13.6.0",
     "express": "^5.2.0",
     "fs-extra": "^9.0.0",
