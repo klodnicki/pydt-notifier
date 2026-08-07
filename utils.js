@@ -1,3 +1,5 @@
-export function mod(x, y) {
+function mod(x, y) {
     return ((x % y) + y) % y;
 }
+
+module.exports = { mod };
