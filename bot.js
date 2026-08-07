@@ -1,17 +1,16 @@
-const util = require('util');
-const config = require('./config');
-const { mod } = require('./utils');
-const { MessageGenerator } = require('./messageGenerator');
-const { DiscordInterface } = require('./discordInterface');
+import { mod } from './utils.js';
+import { MessageGenerator } from './messageGenerator.js';
+import { DiscordInterface } from './discordInterface.js';
 
-class Bot {
-    constructor() {
-        this.discordInterface = new DiscordInterface();
-        this.messageGenerator = new MessageGenerator();
+export class Bot {
+    constructor(config, discordInterface, messageGenerator) {
+        this.config = config;
+        this.discordInterface = discordInterface || new DiscordInterface(config);
+        this.messageGenerator = messageGenerator || new MessageGenerator(config);
     }
 
     async notify(pydtNotification) {
-        const [gameName, gameEntry] = Object.entries(config.games).find(([name, obj]) => name === '*' || name === pydtNotification.gameName) || [];
+        const [gameName, gameEntry] = Object.entries(this.config.games).find(([name, obj]) => name === '*' || name === pydtNotification.gameName) || [];
         if (gameEntry === undefined) {
             console.log('Unrecognized game: ' + pydtNotification.gameName);
             return;
@@ -40,5 +39,3 @@ class Bot {
         process.stdout.write('done.\n');
     }
 }
-
-module.exports = { Bot };

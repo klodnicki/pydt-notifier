@@ -1,16 +1,12 @@
-const fs = require('fs-extra');
-const path = require('path');
-const child_process = require('child_process');
-const express = require('express');
-const morgan = require('morgan');
-const bodyParser = require('body-parser');
-const { promisify } = require('util');
+import fs from 'fs-extra';
+import path from 'path';
+import { exec } from 'child_process';
+import express from 'express';
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
+import { promisify } from 'util';
 
-const exec = promisify(child_process.exec);
-
-const config = require('./config');
-
-async function startExpressServer(callback) {
+export async function startExpressServer(config, callback) {
     if (typeof callback !== 'function')
         throw new Error('Callback is not a function');
 
@@ -49,5 +45,3 @@ async function startExpressServer(callback) {
 
     console.log(`Listening on ${socket || config.http.port}`);
 }
-
-module.exports = { startExpressServer };
