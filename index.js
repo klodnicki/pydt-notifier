@@ -7,7 +7,7 @@ const config = require('./config');
 
 (async () => {
 
-    /** @type {import('./bot').Bot} */
+    /** @type {BotType} */
     const bot = new Bot();
 
     if (config.testNotification) await bot.notify(config.testNotification);

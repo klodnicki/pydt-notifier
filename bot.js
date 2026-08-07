@@ -12,9 +12,9 @@ class Bot {
      * Creates a new Bot instance
      */
     constructor() {
-        /** @type {import('./discordInterface').DiscordInterface} */
+        /** @type {DiscordInterfaceType} */
         this.discordInterface = new DiscordInterface();
-        /** @type {import('./messageGenerator').MessageGenerator} */
+        /** @type {MessageGeneratorType} */
         this.messageGenerator = new MessageGenerator();
     }
 
@@ -39,7 +39,7 @@ class Bot {
         const nextPlayer = gameEntry.players[nextPlayerI];
         const prevPlayer = gameEntry.players[mod(nextPlayerI - 1, gameEntry.players.length)];
 
-        // @ts-expect-error - gameName is a string | undefined but we only reach here when gameEntry is defined
+        // @ts-expect-error - gameName is string | undefined but we only reach here when gameEntry is defined
         const message = this.messageGenerator.generateMessage(prevPlayer, nextPlayer, gameName, gameEntry);
 
         await this.discordInterface.login();

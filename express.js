@@ -12,7 +12,7 @@ const config = require('./config');
 
 /**
  * Starts the Express server that receives notifications
- * @param {function(import('./config').PydtNotification): Promise<void>} callback - Callback to handle incoming notifications
+ * @param {(notification: import('./config').PydtNotification) => Promise<void>} callback - Callback to handle incoming notifications
  * @returns {Promise<void>}
  */
 async function startExpressServer(callback) {
