@@ -1,11 +1,22 @@
 const config = require('./config');
 const Discord = require('discord.js');
 
+/**
+ * Interface for interacting with Discord
+ */
 class DiscordInterface {
+    /**
+     * Creates a new DiscordInterface instance
+     */
     constructor() {
+        /** @type {boolean} */
         this.connecting = false;
 
+        /** @type {Discord.Client} */
         this.client = new Discord.Client({ intents: [] });
+
+        /** @type {Promise<void>|undefined} */
+        this.loginPromise = undefined;
 
         this.client.on('error', console.error);
         this.client.on('warn',  console.warn);
@@ -17,9 +28,13 @@ class DiscordInterface {
             });
     }
 
+    /**
+     * Logs into Discord
+     * @returns {Promise<this>}
+     */
     async login() {
         if (this.client.isReady())  return this;
-        if (this.connecting)        return this.loginPromise.then(() => this);
+        if (this.connecting)        return /** @type {Promise<void>} */ (this.loginPromise).then(() => this);
         this.connecting = true;
 
         console.log('Logging into Discord...');
@@ -35,6 +50,7 @@ class DiscordInterface {
                 .catch(reject);
         })
         .then(() => {
+            // @ts-expect-error - client.user is guaranteed to be defined after 'ready' event
             console.log(`Logged into Discord as ${this.client.user.username}`);
         }, err => {
             console.error('Failed to connect to Discord');
@@ -47,15 +63,27 @@ class DiscordInterface {
         return this;
     }
 
+    /**
+     * Gets a text channel by ID
+     * @param {string} id - The channel ID
+     * @returns {Promise<Discord.TextChannel>}
+     */
     async getChannel(id) {
         await this.login();
         const channel = await this.client.channels.fetch(id);
-        if (!channel.isText()) {
+        if (!/** @type {Discord.Channel} */ (channel).isText()) {
             throw new Error('Channel is not text!');
         }
+        // @ts-expect-error - isText() check ensures this is a text channel
         return channel;
     }
 
+    /**
+     * Sends a message to a Discord channel
+     * @param {string} channel - The channel ID
+     * @param {string} text - The message to send
+     * @returns {Promise<void>}
+     */
     async sendToChannel(channel, text) {
         await this.login();
         await (await this.getChannel(channel)).send(text);

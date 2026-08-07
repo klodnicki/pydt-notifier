@@ -5,10 +5,18 @@ const compileOptions = {
     noEscape: true
 };
 
+/**
+ * Generates formatted messages for Discord notifications
+ */
 class MessageGenerator {
+    /**
+     * Creates a new MessageGenerator instance
+     */
     constructor() {
+        /** @type {MessageGenerator} */
         const self = this;
 
+        /** @type {Handlebars} */
         this.handlebars = Handlebars.create();
 
         this.handlebars.registerHelper('source', function(str, options) {
@@ -33,9 +41,18 @@ class MessageGenerator {
             return self.handlebars.compile(choice, compileOptions)(options.data.root);
         });
 
+        /** @type {HandlebarsTemplateDelegate} */
         this.base = this.handlebars.compile(config.message, compileOptions);
     }
 
+    /**
+     * Generates a message based on player and game information
+     * @param {import('./config').Player} prevPlayer - The player who just finished their turn
+     * @param {import('./config').Player} nextPlayer - The player who is up next
+     * @param {string} gameName - The name of the game
+     * @param {import('./config').GameEntry} game - The game configuration
+     * @returns {string} The formatted message
+     */
     generateMessage(prevPlayer, nextPlayer, gameName, game) {
         return this.base({
             messageData: config.messageData,
