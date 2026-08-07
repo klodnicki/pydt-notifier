@@ -6,7 +6,7 @@ let loginCalled = false;
 
 const FakeDiscordInterface = function() {
   this.login = async () => { loginCalled = true; return this; };
-  this.getChannel = async (id) => ({ isText: () => true, send: async (t) => { sent = t; } });
+  this.getChannel = async (id) => ({ isSendable: () => true, send: async (t) => { sent = t; } });
   this.sendToChannel = async (channel, text) => { sent = text; };
 };
 
@@ -77,7 +77,7 @@ describe('Bot.notify', () => {
   it('propagates sendToChannel errors', async () => {
     const FakeDiscordInterface2 = function() {
       this.login = async () => { loginCalled = true; return this; };
-      this.getChannel = async (id) => ({ isText: () => true, send: async (t) => { sent = t; } });
+      this.getChannel = async (id) => ({ isSendable: () => true, send: async (t) => { sent = t; } });
       this.sendToChannel = async (channel, text) => { throw new Error('boom'); };
     };
 

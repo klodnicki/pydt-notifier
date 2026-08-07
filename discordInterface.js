@@ -71,10 +71,10 @@ class DiscordInterface {
     async getChannel(id) {
         await this.login();
         const channel = await this.client.channels.fetch(id);
-        if (!/** @type {Discord.Channel} */ (channel).isText()) {
+        if (!channel || !channel.isSendable()) {
             throw new Error('Channel is not text!');
         }
-        // @ts-expect-error - isText() check ensures this is a text channel
+        // @ts-expect-error - isSendable() check ensures this is a text channel
         return channel;
     }
 
