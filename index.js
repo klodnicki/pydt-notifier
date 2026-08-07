@@ -1,19 +1,14 @@
 #!/usr/bin/env node
 
-const { Bot } = require('./bot');
-const { startExpressServer } = require('./express');
+import { resolve } from 'path';
+import { Bot } from './bot.js';
+import { startExpressServer } from './express.js';
 
-const config = require('./config');
+const configPath = process.env.PYDT_NOTIFIER_CONFIG || process.argv[2] || './config.json';
+const { default: config } = await import(resolve(configPath));
 
-(async () => {
+const bot = new Bot(config);
 
-    const bot = new Bot();
+if (config.testNotification) await bot.notify(config.testNotification);
 
-    if (config.testNotification) await bot.notify(config.testNotification);
-
-    await startExpressServer(bot.notify.bind(bot));
-
-})().catch(err => {
-    console.error(err);
-    process.exit(1);
-});
+await startExpressServer(config, bot.notify.bind(bot));

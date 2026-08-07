@@ -1,20 +1,14 @@
-const config = require('./config');
-const Discord = require('discord.js');
+import Discord from 'discord.js';
 
-class DiscordInterface {
-    constructor() {
+export class DiscordInterface {
+    constructor(config) {
+        this.config = config;
         this.connecting = false;
 
         this.client = new Discord.Client({ intents: [] });
 
         this.client.on('error', console.error);
         this.client.on('warn',  console.warn);
-
-        this.login()
-            .catch(err => {
-                console.error(err);
-                process.exit(1);
-            });
     }
 
     async login() {
@@ -24,14 +18,9 @@ class DiscordInterface {
 
         console.log('Logging into Discord...');
 
-        // client.login() is already an async function, but it resolves
-        // slightly before the 'ready' event.  So in order to reliably use
-        // client.isReady() to determine whether we've connected, we must
-        // maintain the "connecting" state beyond the resolution of
-        // client.login().
         this.loginPromise = new Promise((resolve, reject) => {
             this.client.once('ready', resolve);
-            this.client.login(config.discord.clientToken)
+            this.client.login(this.config.discord.clientToken)
                 .catch(reject);
         })
         .then(() => {
@@ -61,5 +50,3 @@ class DiscordInterface {
         await (await this.getChannel(channel)).send(text);
     }
 }
-
-module.exports = { DiscordInterface };
