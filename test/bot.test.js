@@ -1,8 +1,14 @@
-import { expect } from 'chai';
-import { Bot } from '../bot.js';
+const { expect } = require('chai');
+const proxyquire = require('proxyquire');
 
 let sent = null;
 let loginCalled = false;
+
+const FakeDiscordInterface = function() {
+  this.login = async () => { loginCalled = true; return this; };
+  this.getChannel = async (id) => ({ isText: () => true, send: async (t) => { sent = t; } });
+  this.sendToChannel = async (channel, text) => { sent = text; };
+};
 
 const fakeMessage = 'A generated message';
 const FakeMessageGenerator = function() { this.generateMessage = () => fakeMessage; };
@@ -16,37 +22,31 @@ const fakeConfig = {
   }
 };
 
+const { Bot } = proxyquire('../bot', {
+  './discordInterface': { DiscordInterface: FakeDiscordInterface },
+  './messageGenerator': { MessageGenerator: FakeMessageGenerator },
+  './config': fakeConfig
+});
+
 describe('Bot.notify', () => {
   beforeEach(() => { sent = null; loginCalled = false; });
 
   it('returns early for unknown game', async () => {
-    const FakeDiscordInterface = function() {
-      this.login = async () => { loginCalled = true; return this; };
-      this.sendToChannel = async (channel, text) => { sent = text; };
-    };
-    const bot = new Bot(fakeConfig, new FakeDiscordInterface(), new FakeMessageGenerator());
+    const bot = new Bot();
     await bot.notify({ gameName: 'Nope', userName: 'Alice' });
     expect(sent).to.be.null;
     expect(loginCalled).to.be.false;
   });
 
   it('sends a message for known game/player', async () => {
-    const FakeDiscordInterface = function() {
-      this.login = async () => { loginCalled = true; return this; };
-      this.sendToChannel = async (channel, text) => { sent = text; };
-    };
-    const bot = new Bot(fakeConfig, new FakeDiscordInterface(), new FakeMessageGenerator());
+    const bot = new Bot();
     await bot.notify({ gameName: 'TestGame', userName: 'Bob' });
     expect(loginCalled).to.be.true;
     expect(sent).to.equal(fakeMessage);
   });
 
   it('returns early for unknown player', async () => {
-    const FakeDiscordInterface = function() {
-      this.login = async () => { loginCalled = true; return this; };
-      this.sendToChannel = async (channel, text) => { sent = text; };
-    };
-    const bot = new Bot(fakeConfig, new FakeDiscordInterface(), new FakeMessageGenerator());
+    const bot = new Bot();
     await bot.notify({ gameName: 'TestGame', userName: 'Charlie' });
     expect(sent).to.be.null;
     expect(loginCalled).to.be.false;
@@ -54,17 +54,20 @@ describe('Bot.notify', () => {
 
   it('passes correct prev and next players to messageGenerator', async () => {
     let received = null;
-    const FakeDiscordInterface = function() {
-      this.login = async () => { loginCalled = true; return this; };
-      this.sendToChannel = async (channel, text) => { sent = text; };
-    };
     const FakeMessageGenerator2 = function() {
       this.generateMessage = (prev, next, gameName, game) => {
         received = { prev, next, gameName, game };
         return 'msg';
       };
     };
-    const bot = new Bot(fakeConfig, new FakeDiscordInterface(), new FakeMessageGenerator2());
+
+    const { Bot: Bot2 } = proxyquire('../bot', {
+      './discordInterface': { DiscordInterface: FakeDiscordInterface },
+      './messageGenerator': { MessageGenerator: FakeMessageGenerator2 },
+      './config': fakeConfig
+    });
+
+    const bot = new Bot2();
     await bot.notify({ gameName: 'TestGame', userName: 'Alice' });
     expect(loginCalled).to.be.true;
     expect(received.next.pydtName).to.equal('Alice');
@@ -74,9 +77,17 @@ describe('Bot.notify', () => {
   it('propagates sendToChannel errors', async () => {
     const FakeDiscordInterface2 = function() {
       this.login = async () => { loginCalled = true; return this; };
+      this.getChannel = async (id) => ({ isText: () => true, send: async (t) => { sent = t; } });
       this.sendToChannel = async (channel, text) => { throw new Error('boom'); };
     };
-    const bot = new Bot(fakeConfig, new FakeDiscordInterface2(), new FakeMessageGenerator());
+
+    const { Bot: Bot3 } = proxyquire('../bot', {
+      './discordInterface': { DiscordInterface: FakeDiscordInterface2 },
+      './messageGenerator': { MessageGenerator: FakeMessageGenerator },
+      './config': fakeConfig
+    });
+
+    const bot = new Bot3();
     try {
       await bot.notify({ gameName: 'TestGame', userName: 'Bob' });
       throw new Error('Did not throw');

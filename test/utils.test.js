@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import { mod } from '../utils.js';
+const { expect } = require('chai');
+const { mod } = require('../utils');
 
 describe('utils.mod', () => {
   it('computes positive modulus correctly', () => {
@@ -11,6 +11,7 @@ describe('utils.mod', () => {
   });
 
   it('handles negative divisor by wrapping', () => {
+    // behaviour defined in implementation ((x%y)+y)%y
     expect(mod(1, -3)).to.equal(-2);
   });
 

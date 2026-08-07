@@ -1,11 +1,12 @@
-import Handlebars from 'handlebars';
+const Handlebars = require('handlebars');
+const config = require('./config');
 
 const compileOptions = {
     noEscape: true
 };
 
-export class MessageGenerator {
-    constructor(config) {
+class MessageGenerator {
+    constructor() {
         const self = this;
 
         this.handlebars = Handlebars.create();
@@ -33,12 +34,11 @@ export class MessageGenerator {
         });
 
         this.base = this.handlebars.compile(config.message, compileOptions);
-        this.config = config;
     }
 
     generateMessage(prevPlayer, nextPlayer, gameName, game) {
         return this.base({
-            messageData: this.config.messageData,
+            messageData: config.messageData,
             prevPlayer,
             nextPlayer,
             gameName,
@@ -46,3 +46,5 @@ export class MessageGenerator {
         });
     }
 }
+
+module.exports = { MessageGenerator };
