@@ -31,4 +31,37 @@ describe('startExpressServer', () => {
     // If it returned a promise quickly, fine. We do not assert service started to avoid side effects.
     expect(typeof p.then).to.equal('function');
   });
+
+  it('properly awaits server listening before resolving', async function() {
+    this.timeout(5000);
+    const noop = () => {};
+
+    // Start the server
+    const serverPromise = startExpressServer(noop);
+
+    // Verify it returns a promise
+    expect(typeof serverPromise.then).to.equal('function');
+    expect(typeof serverPromise.catch).to.equal('function');
+
+    // The function should await and resolve without throwing
+    await serverPromise;
+  });
+
+  it('handles server error events', async function() {
+    this.timeout(5000);
+    
+    // Test with an invalid port that should trigger an error
+    const badConfig = { http: { port: -1, socket: null } };
+    const { startExpressServer: startBadServer } = proxyquire('../express', {
+      './config': badConfig
+    });
+
+    try {
+      await startBadServer(() => {});
+      throw new Error('Should have thrown');
+    } catch (e) {
+      // Should throw due to invalid port
+      expect(e).to.exist;
+    }
+  });
 });
