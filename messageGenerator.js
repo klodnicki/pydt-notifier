@@ -16,21 +16,21 @@ class MessageGenerator {
         /** @type {MessageGenerator} */
         const self = this;
 
-        /** @type {Handlebars} */
+        /** @type {typeof Handlebars} */
         this.handlebars = Handlebars.create();
 
-        this.handlebars.registerHelper('source', function(str, options) {
+        this.handlebars.registerHelper('source', function(/** @type {unknown} */ str, /** @type {Handlebars.HelperOptions} */ options) {
             if (typeof str !== 'string') {
                 return "(Not given a string!)";
             }
             return self.handlebars.compile(str, compileOptions)(options.data.root);
         });
 
-        this.handlebars.registerHelper('discordTag', function(player, options) {
-            return new Handlebars.SafeString(`<@${player.discordId}>`);
+        this.handlebars.registerHelper('discordTag', function(/** @type {unknown} */ player, /** @type {Handlebars.HelperOptions} */ options) {
+            return new Handlebars.SafeString(`<@${/** @type {{discordId: string}} */(player).discordId}>`);
         });
 
-        this.handlebars.registerHelper('randomMessageIn', function(randomFrom, options) {
+        this.handlebars.registerHelper('randomMessageIn', function(/** @type {unknown} */ randomFrom, /** @type {Handlebars.HelperOptions} */ options) {
             if (!(randomFrom instanceof Array)) {
                 return "(Input is not an array!)";
             }
