@@ -40,7 +40,6 @@ async function startExpressServer(callback) {
       : null;
 
     if (socket) {
-        // @ts-expect-error - fs-extra exists returns Promise<boolean> in current version
         if (await fs.exists(socket)) {
             await fs.unlink(socket);
         }
