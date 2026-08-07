@@ -46,8 +46,10 @@ async function startExpressServer(callback) {
         }
     }
 
-    // @ts-expect-error - app.listen accepts (port|socket, callback?)
-    await promisify(app.listen).call(app, config.http.socket || config.http.port);
+    await new Promise((resolve, reject) => {
+        const server = app.listen(config.http.socket || config.http.port, resolve);
+        server.on('error', reject);
+    });
 
     if (socket) {
         await exec(`chgrp www-data '${socket}'`);
