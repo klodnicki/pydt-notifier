@@ -3,6 +3,21 @@ remote.name = 'gizmo'
 remote.host = '127.0.0.1'
 remote.allowAnyHosts = true
 
+def nvmVersion = readFile('nvm_version').trim()
+
+def shNode = { String command ->
+    sh """
+        export NVM_DIR="\${WORKSPACE}/.nvm"
+        if [ ! -s "\$NVM_DIR/nvm.sh" ]; then
+            echo "NVM is not installed in the workspace" >&2
+            exit 1
+        fi
+        . "\$NVM_DIR/nvm.sh"
+        nvm use
+        ${command}
+    """
+}
+
 pipeline {
     agent any
     environment {
@@ -13,19 +28,30 @@ pipeline {
             remote.user = env.CREDENTIALS_USR
             remote.identityFile = env.CREDENTIALS
             sh 'git clean -fd'
+
+            sh """
+                export NVM_DIR="\${WORKSPACE}/.nvm"
+                mkdir -p "\$NVM_DIR"
+                if [ ! -s "\$NVM_DIR/nvm.sh" ]; then
+                    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${nvmVersion}/install.sh" | bash
+                fi
+                . "\$NVM_DIR/nvm.sh"
+                nvm install "\$(cat .nvmrc)"
+                nvm alias default "\$(cat .nvmrc)"
+            """
         } } }
 
         stage('Install dependencies') {
             steps {
-                sh 'npm i';
+                shNode 'npm i'
             }
         }
 
         stage('Test') {
             steps {
                 // Use CI install and run tests; ensure config is available for tests
-                sh 'npm ci --silent';
-                sh "PYDT_NOTIFIER_CONFIG=./config-template.json npm test --silent";
+                shNode 'npm ci --silent'
+                shNode 'PYDT_NOTIFIER_CONFIG=./config-template.json npm test --silent'
             }
         }
 
@@ -34,11 +60,11 @@ pipeline {
                 NODE_ENV = 'PRODUCTION'
             }
             steps { script {
-                sh 'npm run pack';
+                shNode 'npm run pack'
             } }
         }
 
-        stage('Install Node') {
+        stage('Install Node on Target') {
             steps { script {
                 // Update nvm
                 nvmVersion = readFile('nvm_version').trim()
