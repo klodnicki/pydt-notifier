@@ -65,14 +65,14 @@ pipeline {
                 sshCommand remote: remote, command: 'mkdir api.new'
                 sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.tgz', into: 'api.new'
                 sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.service', into: 'api.new'
-                sshCommand remote: remote, command: '''
+                sshCommand remote: remote, command: """
                     . ~/.nvm/nvm.sh &&
                     nvm use 'v${nodeVersion}' &&
                     npm i com-klodnicki-pydt-notifier.tgz &&
                     rm com-klodnicki-pydt-notifier.tgz &&
                     mkdir -p ~/.config/systemd/user/ &&
                     mv com-klodnicki-pydt-notifier.service ~/.config/systemd/user/com-klodnicki-pydt-notifier.service
-                '''
+                """
             } }
         }
 
