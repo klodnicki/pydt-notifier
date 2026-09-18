@@ -3,7 +3,7 @@ remote.name = 'gizmo'
 remote.host = '127.0.0.1'
 remote.allowAnyHosts = true
 
-def nvmVersion = readFile('nvm_version').trim()
+def nvmVersion
 
 def shNode = { String command ->
     sh """
@@ -29,6 +29,7 @@ pipeline {
             remote.identityFile = env.CREDENTIALS
             sh 'git clean -fd'
 
+            nvmVersion = readFile('nvm_version').trim()
             sh """
                 export NVM_DIR="\${WORKSPACE}/.nvm"
                 mkdir -p "\$NVM_DIR"
