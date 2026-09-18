@@ -24,7 +24,7 @@ pipeline {
         CREDENTIALS = credentials('gizmo-ci-com-klodnicki-pydt-notifier')
     }
     stages {
-        stage('Setup') { steps { script {
+        stage('Setup') {steps { script {
             remote.user = env.CREDENTIALS_USR
             remote.identityFile = env.CREDENTIALS
             sh 'git clean -fd'
@@ -41,19 +41,15 @@ pipeline {
             """
         } } }
 
-        stage('Install dependencies') {
-            steps {
-                shNode 'npm i'
-            }
-        }
+        stage('Install dependencies') { steps { script {
+            shNode 'npm i'
+        } } }
 
-        stage('Test') {
-            steps {
-                // Use CI install and run tests; ensure config is available for tests
-                shNode 'npm ci --silent'
-                shNode 'PYDT_NOTIFIER_CONFIG=./config-template.json npm test --silent'
-            }
-        }
+        stage('Test') { steps { script {
+            // Use CI install and run tests; ensure config is available for tests
+            shNode 'npm ci --silent'
+            shNode 'PYDT_NOTIFIER_CONFIG=./config-template.json npm test --silent'
+        } } }
 
         stage('Build') {
             environment {
