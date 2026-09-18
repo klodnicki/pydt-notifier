@@ -4,7 +4,7 @@ Description=com-klodnicki-pydt-notifier
 StartLimitIntervalSec=0
 
 [Service]
-ExecStart=/var/www/com/klodnicki/pydt-notifier/api/node_modules/.bin/com-klodnicki-pydt-notifier /var/www/com/klodnicki/pydt-notifier/.config/com-klodnicki-pydt-notifier/config.json
+ExecStart=/bin/bash -c '. .nvm/nvm.sh && nvm use "$(< api/node_modules/com-klodnicki-pydt-notifier/.nvmrc)" && node api/node_modules/.bin/com-klodnicki-pydt-notifier .config/com-klodnicki-pydt-notifier/config.json'
 
 Restart=on-failure
 RestartSec=10s

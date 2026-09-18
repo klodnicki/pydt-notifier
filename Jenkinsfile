@@ -54,6 +54,21 @@ pipeline {
             } }
         }
 
+        stage('Install Node') {
+            steps { script {
+                // Update nvm
+                sshCommand remote: remote, command: '''
+                    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v$(cat nvm_version)/install.sh" | bash
+                '''
+
+                // Install node
+                sshCommand remote: remote, command: '''
+                    source ~/.nvm/nvm.sh &&
+                    nvm install $(cat node_version)
+                '''
+            }}
+        }
+
         stage('Deploy') {
             steps { script {
                 sshCommand remote: remote, command: '''
