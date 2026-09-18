@@ -38,6 +38,25 @@ pipeline {
             } }
         }
 
+        stage('Install Node') {
+            steps { script {
+                // Update nvm
+                nvmVersion = readFile('nvm_version').trim()
+                    
+                sshCommand remote: remote, command: """
+                    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${nvmVersion}/install.sh" | bash
+                """
+
+                // Install node
+                nodeVersion = readFile('.nvmrc').trim()
+
+                sshCommand remote: remote, command: """
+                    . ~/.nvm/nvm.sh &&
+                    nvm install '${nodeVersion}'
+                """
+            }}
+        }
+
         stage('Prepare Deployment') {
             steps { script {
                 sshCommand remote: remote, command: 'rm -rf api.new api.old'
@@ -45,7 +64,7 @@ pipeline {
                 sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.tgz', into: 'api.new'
                 sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.service', into: 'api.new'
                 sshCommand remote: remote, command: '''
-                    cd api.new &&
+                    . ~/.nvm/nvm.sh &&
                     npm i com-klodnicki-pydt-notifier.tgz &&
                     rm com-klodnicki-pydt-notifier.tgz &&
                     mkdir -p ~/.config/systemd/user/ &&
