@@ -37,8 +37,8 @@ pipeline {
                     curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${nvmVersion}/install.sh" | bash
                 fi
                 . "\$NVM_DIR/nvm.sh"
-                nvm install "\$(cat .nvmrc)"
-                nvm alias default "\$(cat .nvmrc)"
+                nvm install "v\$(cat .nvmrc)"
+                nvm alias default "v\$(cat .nvmrc)"
             """
         } } }
 
