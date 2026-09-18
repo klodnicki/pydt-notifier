@@ -52,19 +52,22 @@ pipeline {
 
                 sshCommand remote: remote, command: """
                     . ~/.nvm/nvm.sh &&
-                    nvm install '${nodeVersion}'
+                    nvm install 'v${nodeVersion}'
                 """
             }}
         }
 
         stage('Prepare Deployment') {
             steps { script {
+                nodeVersion = readFile('.nvmrc').trim()
+
                 sshCommand remote: remote, command: 'rm -rf api.new api.old'
                 sshCommand remote: remote, command: 'mkdir api.new'
                 sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.tgz', into: 'api.new'
                 sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.service', into: 'api.new'
                 sshCommand remote: remote, command: '''
                     . ~/.nvm/nvm.sh &&
+                    nvm use 'v${nodeVersion}' &&
                     npm i com-klodnicki-pydt-notifier.tgz &&
                     rm com-klodnicki-pydt-notifier.tgz &&
                     mkdir -p ~/.config/systemd/user/ &&
