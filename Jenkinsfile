@@ -4,6 +4,7 @@ remote.host = '127.0.0.1'
 remote.allowAnyHosts = true
 
 def nvmVersion
+def nodeVersion
 
 def shNode = { String command ->
     sh """
@@ -27,18 +28,17 @@ pipeline {
         stage('Setup') {steps { script {
             remote.user = env.CREDENTIALS_USR
             remote.identityFile = env.CREDENTIALS
+            nvmVersion = readFile('nvm_version').trim()
+            nodeVersion = readFile('.nvmrc').trim()
             sh 'git clean -fd'
 
-            nvmVersion = readFile('nvm_version').trim()
             sh """
-                export NVM_DIR="\${WORKSPACE}/.nvm"
-                mkdir -p "\$NVM_DIR"
-                if [ ! -s "\$NVM_DIR/nvm.sh" ]; then
-                    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${nvmVersion}/install.sh" | bash
-                fi
-                . "\$NVM_DIR/nvm.sh"
-                nvm install "v\$(cat .nvmrc)"
-                nvm alias default "v\$(cat .nvmrc)"
+                export NVM_DIR="\${WORKSPACE}/.nvm" &&
+                mkdir -p "\$NVM_DIR" &&
+                curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${nvmVersion}/install.sh" | bash &&
+                . "\$NVM_DIR/nvm.sh" &&
+                nvm install "v${nodeVersion}" &&
+                nvm alias default "v${nodeVersion}"
             """
         } } }
 
@@ -64,15 +64,11 @@ pipeline {
         stage('Install Node on Target') {
             steps { script {
                 // Update nvm
-                nvmVersion = readFile('nvm_version').trim()
-                    
                 sshCommand remote: remote, command: """
                     curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${nvmVersion}/install.sh" | bash
                 """
 
                 // Install node
-                nodeVersion = readFile('.nvmrc').trim()
-
                 sshCommand remote: remote, command: """
                     . ~/.nvm/nvm.sh &&
                     nvm install 'v${nodeVersion}'
@@ -82,8 +78,6 @@ pipeline {
 
         stage('Prepare Deployment') {
             steps { script {
-                nodeVersion = readFile('.nvmrc').trim()
-
                 sshCommand remote: remote, command: 'rm -rf api.new api.old'
                 sshCommand remote: remote, command: 'mkdir api.new'
                 sshPut remote: remote, from: 'com-klodnicki-pydt-notifier.tgz', into: 'api.new'
