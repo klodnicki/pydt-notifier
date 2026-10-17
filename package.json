@@ -54,7 +54,7 @@
     "discord.js": "^14.27.0",
     "express": "^5.2.0",
     "fs-extra": "^11.0.0",
-    "handlebars": "^4.7.9",
+    "handlebars": "^4.7.10",
     "morgan": "^1.11.0"
   }
 }
