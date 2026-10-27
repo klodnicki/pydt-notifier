@@ -1,0 +1,100 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SSH_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Use Node.js from .nvmrc
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: npm ci --silent
+
+      - name: Run tests
+        env:
+          PYDT_NOTIFIER_CONFIG: ./config-template.json
+        run: npm test --silent
+
+      - name: Build package
+        env:
+          NODE_ENV: PRODUCTION
+        run: npm run pack
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName ${{ secrets.DEPLOY_HOST }}
+            User ${{ secrets.DEPLOY_USER }}
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          EOF
+
+      - name: Install Node on target
+        run: |
+          NODE_VERSION="$(< .nvmrc)"
+          NVM_VERSION="$(< nvm_version)"
+          ssh deploy-target "NODE_VERSION='$NODE_VERSION' NVM_VERSION='$NVM_VERSION' bash -s" <<'REMOTE'
+          set -eo pipefail
+          curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh" | bash
+          . ~/.nvm/nvm.sh
+          nvm install "v${NODE_VERSION}"
+          REMOTE
+
+      - name: Prepare deployment
+        run: |
+          NODE_VERSION="$(< .nvmrc)"
+          ssh deploy-target 'rm -rf api.new api.old && mkdir api.new'
+          scp com-klodnicki-pydt-notifier.tgz com-klodnicki-pydt-notifier.service deploy-target:api.new/
+          ssh deploy-target "NODE_VERSION='$NODE_VERSION' bash -s" <<'REMOTE'
+          set -eo pipefail
+          . ~/.nvm/nvm.sh
+          nvm use "v${NODE_VERSION}"
+          cd api.new
+          npm i com-klodnicki-pydt-notifier.tgz
+          rm com-klodnicki-pydt-notifier.tgz
+          mkdir -p ~/.config/systemd/user/
+          mv com-klodnicki-pydt-notifier.service ~/.config/systemd/user/com-klodnicki-pydt-notifier.service
+          REMOTE
+
+      - name: Deploy
+        run: |
+          ssh deploy-target bash -s <<'REMOTE'
+          set -eo pipefail
+          mkdir -p api
+          mv api api.old
+          mv api.new api
+          systemctl --user daemon-reload
+          systemctl --user restart com-klodnicki-pydt-notifier
+          REMOTE
+
+      - name: Clean up
+        run: ssh deploy-target 'rm -rf api.old'
