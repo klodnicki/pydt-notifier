@@ -1,0 +1,7 @@
+.git
+.ori
+node_modules
+test
+config.json
+*.tgz
+logs
