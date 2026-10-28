@@ -7,21 +7,25 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /opt/pydt-notifier
 
-COPY nvm_version .nvmrc ./
+COPY nvm_version .nvmrc /tmp/pydt-notifier/
 
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends bash ca-certificates curl \
     && rm -rf /var/lib/apt/lists/* \
-    && NVM_VERSION="$(cat nvm_version)" \
-    && NODE_VERSION="$(cat .nvmrc)" \
+    && NVM_VERSION="$(cat /tmp/pydt-notifier/nvm_version)" \
     && mkdir -p "$NVM_DIR" \
     && curl --fail --silent --show-error --location \
         "https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh" \
-        | bash \
-    && . "$NVM_DIR/nvm.sh" \
+        | PROFILE=/dev/null bash
+
+RUN NODE_VERSION="$(cat /tmp/pydt-notifier/.nvmrc)" \
+    && source "$NVM_DIR/nvm.sh" \
     && nvm install "$NODE_VERSION" \
     && nvm alias default "$NODE_VERSION" \
-    && ln -s "$NVM_DIR/versions/node/v${NODE_VERSION}" "$NVM_DIR/current"
+    && ln -s "$NVM_DIR/versions/node/v${NODE_VERSION}" "$NVM_DIR/current" \
+    && rm -rf /tmp/pydt-notifier
+
+WORKDIR /opt/pydt-notifier
 
 COPY . .
 
