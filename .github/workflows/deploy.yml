@@ -52,6 +52,7 @@ jobs:
           cat > ~/.ssh/config <<EOF
           Host deploy-target
             HostName ${{ secrets.DEPLOY_HOST }}
+            Port ${{ secrets.DEPLOY_PORT || 22 }}
             User ${{ secrets.DEPLOY_USER }}
             IdentityFile ~/.ssh/deploy_key
             IdentitiesOnly yes
