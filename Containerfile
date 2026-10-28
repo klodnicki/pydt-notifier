@@ -3,6 +3,8 @@ FROM debian:bookworm-slim
 ENV NVM_DIR=/usr/local/nvm
 ENV PATH=/usr/local/nvm/current/bin:${PATH}
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 WORKDIR /opt/pydt-notifier
 
 COPY nvm_version .nvmrc ./
