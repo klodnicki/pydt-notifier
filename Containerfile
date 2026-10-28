@@ -3,8 +3,6 @@ FROM debian:bookworm-slim
 ENV NVM_DIR=/usr/local/nvm
 ENV PATH=/usr/local/nvm/current/bin:${PATH}
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
 WORKDIR /opt/pydt-notifier
 
 COPY nvm_version .nvmrc /tmp/pydt-notifier/
@@ -16,14 +14,16 @@ RUN apt-get update \
     && mkdir -p "$NVM_DIR" \
     && curl --fail --silent --show-error --location \
         "https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh" \
-        | PROFILE=/dev/null bash
+        --output /tmp/nvm-install.sh \
+    && PROFILE=/dev/null bash /tmp/nvm-install.sh \
+    && rm /tmp/nvm-install.sh
 
-RUN NODE_VERSION="$(cat /tmp/pydt-notifier/.nvmrc)" \
+RUN bash -e -c 'NODE_VERSION="$(cat /tmp/pydt-notifier/.nvmrc)" \
     && source "$NVM_DIR/nvm.sh" \
     && nvm install "$NODE_VERSION" \
     && nvm alias default "$NODE_VERSION" \
     && ln -s "$NVM_DIR/versions/node/v${NODE_VERSION}" "$NVM_DIR/current" \
-    && rm -rf /tmp/pydt-notifier
+    && rm -rf /tmp/pydt-notifier'
 
 WORKDIR /opt/pydt-notifier
 
