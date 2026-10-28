@@ -8,7 +8,7 @@ WORKDIR /opt/pydt-notifier
 COPY nvm_version .nvmrc /tmp/pydt-notifier/
 
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends bash ca-certificates curl \
+    && apt-get install --yes --no-install-recommends bash ca-certificates curl libatomic1 \
     && rm -rf /var/lib/apt/lists/* \
     && NVM_VERSION="$(cat /tmp/pydt-notifier/nvm_version)" \
     && mkdir -p "$NVM_DIR" \
